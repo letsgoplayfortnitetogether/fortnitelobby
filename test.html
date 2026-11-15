@@ -175,21 +175,25 @@ body.light-mode .top-bar{background:rgba(255,255,255,0.9);color:#000;border-bott
 </div>
 
 <div class="settings-modal" id="settingsModal">
-  <label>Site Title (changes tab name):</label>
-  <input type="text" id="titleInput" class="settings-input">
-  <!-- Add this inside your .settings-modal -->
-<label for="tabPreset">Tab Cloak Preset:</label>
-<select id="tabPreset" class="settings-input">
-  <option value="canvas">Canvas</option>
-  <option value="google">Google</option>
-  <option value="drive">Google Drive</option>
-  <option value="classroom">Google Classroom</option>
-    <button class="btn" id="saveTitleBtn">Save</button>
+  <label for="titleInput">Site Title (changes tab name):</label>
+  <input type="text" id="titleInput" class="settings-input" placeholder="Enter tab title...">
+  <button class="btn" id="saveTitleBtn">Save Title</button>
   <span id="saveCheck" class="checkmark">✔</span>
-</select>
 
-<input type="text" id="customIconUrl" class="settings-input" placeholder="Paste custom image URL (.png/.ico)" style="display:none;" />
-<button class="btn" id="applyTabBtn">Apply Tab Logo</button>
+  <hr style="margin: 15px 0; opacity: 0.3;">
+
+  <label for="tabPreset">Tab Cloak Preset:</label>
+  <select id="tabPreset" class="settings-input">
+    <option value="canvas">Canvas</option>
+    <option value="google">Google</option>
+    <option value="drive">Google Drive</option>
+    <option value="classroom">Google Classroom</option>
+    <option value="custom">Custom URL...</option>
+  </select>
+
+  <input type="text" id="customIconUrl" class="settings-input" placeholder="Paste custom image URL (.png/.ico)" style="display:none; margin-top: 8px;" />
+  <button class="btn" id="applyTabBtn" style="margin-top: 8px;">Apply Tab Logo</button>
+</div>
 
 </div>
 
@@ -383,10 +387,11 @@ searchInput.addEventListener('keyup', (e) => {
         recentsBtn.classList.remove('active');
     }
 });
-  const presets = {
+// ------------------ TAB CLOAK & LOGOS ------------------
+const presets = {
   canvas: {
     title: "Canvas",
-    icon: "https://www.wabash.edu/images2/technology/canvas.png"
+    icon: "https://cloudfront.net"
   },
   google: {
     title: "Google",
@@ -404,7 +409,6 @@ searchInput.addEventListener('keyup', (e) => {
 
 const presetSelect = document.getElementById("tabPreset");
 const customIconInput = document.getElementById("customIconUrl");
-const customTitleInput = document.getElementById("customTabTitle");
 const applyTabBtn = document.getElementById("applyTabBtn");
 
 // Show custom URL box only if "Custom URL..." is selected
@@ -414,34 +418,50 @@ presetSelect.addEventListener("change", () => {
 
 // Function to update the tab icon and title
 function setTabCloak(title, iconUrl) {
-  if (title) document.title = title;
+  if (title) {
+    document.title = title;
+    localStorage.setItem("savedTabTitle", title);
+  }
   if (iconUrl) {
     let link = document.getElementById("favicon");
+    // Create the favicon link tag automatically if it doesn't exist yet
+    if (!link) {
+      link = document.createElement("link");
+      link.id = "favicon";
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
     link.href = iconUrl;
+    localStorage.setItem("savedTabIcon", iconUrl);
   }
-  localStorage.setItem("savedTabTitle", title);
-  localStorage.setItem("savedTabIcon", iconUrl);
 }
 
 // Apply button click event
 applyTabBtn.addEventListener("click", () => {
   const choice = presetSelect.value;
-  let newTitle = customTitleInput.value.trim();
+  // Use whatever is typed in titleInput, or fall back to the preset title
+  let newTitle = titleInput.value.trim();
   let newIcon = "";
 
   if (choice === "custom") {
     newIcon = customIconInput.value.trim();
+    if (!newTitle) newTitle = document.title;
   } else {
-    newTitle = newTitle || presets[choice].title;
+    newTitle = presets[choice].title;
     newIcon = presets[choice].icon;
+    titleInput.value = newTitle; // Sync the title input box
   }
 
   setTabCloak(newTitle, newIcon);
+  
+  // Show checkmark feedback and close modal
+  saveCheck.classList.add('show');
+  setTimeout(() => saveCheck.classList.remove('show'), 1500);
 });
 
-// Load saved tab logo when the page opens
+// Load saved tab logo and title when the page opens
 window.addEventListener("DOMContentLoaded", () => {
-  const savedTitle = localStorage.getItem("savedTabTitle");
+  const savedTitle = localStorage.getItem("savedTabTitle") || localStorage.getItem("siteTitle");
   const savedIcon = localStorage.getItem("savedTabIcon");
   if (savedTitle || savedIcon) {
     setTabCloak(savedTitle, savedIcon);
