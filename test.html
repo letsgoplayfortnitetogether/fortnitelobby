@@ -5,7 +5,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Canvas</title>
-<link id="tabFavicon" rel="icon" href="https://www.wabash.edu/images2/technology/canvas.png" type="image/png" />
+<link rel="icon" href="https://www.wabash.edu/images2/technology/canvas.png" type="image/png" />
 <style>
 html, body {margin:0;padding:0;height:100%;box-sizing:border-box;overflow-x:hidden;font-family:Arial, sans-serif;-webkit-font-smoothing:antialiased;}
 body {background:#121212;color:#fff;transition:background .28s ease,color .28s ease;min-height:100vh;padding-top:48px;cursor:none;}
@@ -179,16 +179,6 @@ body.light-mode .top-bar{background:rgba(255,255,255,0.9);color:#000;border-bott
   <input type="text" id="titleInput" class="settings-input">
   <button class="btn" id="saveTitleBtn">Save</button>
   <span id="saveCheck" class="checkmark">✔</span>
-</div>
-<label for="tabLogoInput" style="font-size:13px;">Tab Logo (Image URL or Upload):</label>
-<input id="tabLogoInput" class="settings-input" type="text" placeholder="Paste image URL..." />
-<input id="tabLogoFile" type="file" accept="image/*" style="font-size:12px;" />
-
-<div style="display:flex;gap:6px;flex-wrap:wrap;">
-  <button type="button" class="btn logo-preset" data-logo="https://www.wabash.edu/images2/technology/canvas.png" data-title="Canvas">Canvas</button>
-  <button type="button" class="btn logo-preset" data-logo="https://gstatic.com" data-title="My Drive - Google Drive">Drive</button>
-  <button type="button" class="btn logo-preset" data-logo="https://gstatic.com" data-title="Classes">Classroom</button>
-  <button type="button" class="btn logo-preset" data-logo="https://google.com" data-title="Google">Google</button>
 </div>
 
 <div id="musicPlayer" style="display:none;"></div>
@@ -380,57 +370,6 @@ searchInput.addEventListener('keyup', (e) => {
         favBtn.classList.remove('active');
         recentsBtn.classList.remove('active');
     }
-});
-  const tabFavicon = document.getElementById("tabFavicon");
-const tabLogoInput = document.getElementById("tabLogoInput");
-const tabLogoFile = document.getElementById("tabLogoFile");
-
-function changeTabLogo(url) {
-  if (!url) return;
-  tabFavicon.href = url;
-  localStorage.setItem("savedTabLogo", url);
-}
-
-// 1. Load saved tab logo automatically when the page opens
-const savedLogo = localStorage.getItem("savedTabLogo");
-if (savedLogo) {
-  tabFavicon.href = savedLogo;
-  if (tabLogoInput) tabLogoInput.value = savedLogo;
-}
-
-// 2. Update when pasting an image URL (connect this to your existing Save button if you have one)
-if (tabLogoInput) {
-  tabLogoInput.addEventListener("change", () => {
-    changeTabLogo(tabLogoInput.value.trim());
-  });
-}
-
-// 3. Update when uploading an image file from the device
-if (tabLogoFile) {
-  tabLogoFile.addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      changeTabLogo(event.target.result);
-      if (tabLogoInput) tabLogoInput.value = "";
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-// 4. One-click preset buttons (updates both tab logo and tab title)
-document.querySelectorAll(".logo-preset").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const logo = btn.dataset.logo;
-    const title = btn.dataset.title;
-    changeTabLogo(logo);
-    if (title) {
-      document.title = title;
-      localStorage.setItem("savedTabTitle", title);
-    }
-    if (tabLogoInput) tabLogoInput.value = logo;
-  });
 });
 </script>
 </body>
