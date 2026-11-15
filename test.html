@@ -177,8 +177,6 @@ body.light-mode .top-bar{background:rgba(255,255,255,0.9);color:#000;border-bott
 <div class="settings-modal" id="settingsModal">
   <label>Site Title (changes tab name):</label>
   <input type="text" id="titleInput" class="settings-input">
-  <button class="btn" id="saveTitleBtn">Save</button>
-  <span id="saveCheck" class="checkmark">✔</span>
   <!-- Add this inside your .settings-modal -->
 <label for="tabPreset">Tab Cloak Preset:</label>
 <select id="tabPreset" class="settings-input">
@@ -186,11 +184,11 @@ body.light-mode .top-bar{background:rgba(255,255,255,0.9);color:#000;border-bott
   <option value="google">Google</option>
   <option value="drive">Google Drive</option>
   <option value="classroom">Google Classroom</option>
-  <option value="custom">Custom URL...</option>
+    <button class="btn" id="saveTitleBtn">Save</button>
+  <span id="saveCheck" class="checkmark">✔</span>
 </select>
 
 <input type="text" id="customIconUrl" class="settings-input" placeholder="Paste custom image URL (.png/.ico)" style="display:none;" />
-<input type="text" id="customTabTitle" class="settings-input" placeholder="Custom tab title (optional)" />
 <button class="btn" id="applyTabBtn">Apply Tab Logo</button>
 
 </div>
