@@ -63,6 +63,42 @@ body.light-mode .top-bar{background:rgba(255,255,255,0.9);color:#000;border-bott
 #secret-button:hover {
     color: white; 
 }
+  .preset-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.preset-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: inherit;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.preset-option:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+.preset-option.selected {
+  border-color: #00ffc8;
+  background: rgba(0, 255, 200, 0.12);
+}
+.preset-option img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  border-radius: 3px;
+}
+body.light-mode .preset-option {
+  background: #f2f2f2;
+  border-color: #ddd;
+}
+
   </style>
 </head>
 <body>
