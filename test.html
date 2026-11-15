@@ -180,26 +180,19 @@ body.light-mode .top-bar{background:rgba(255,255,255,0.9);color:#000;border-bott
   <button class="btn" id="saveTitleBtn">Save</button>
   <span id="saveCheck" class="checkmark">✔</span>
 </div>
-<!-- Existing Tab Name section -->
-<label for="tabNameInput">Change Tab Name:</label>
-<div style="display: flex; gap: 6px; align-items: center;">
-  <input type="text" id="tabNameInput" class="settings-input" placeholder="Enter tab name..." />
-  <button class="btn" id="saveTabNameBtn">Save</button>
-  <span class="checkmark" id="tabNameCheck">✔</span>
-</div>
+<!-- Add this inside your .settings-modal -->
+<label for="tabPreset">Tab Cloak Preset:</label>
+<select id="tabPreset" class="settings-input">
+  <option value="canvas">Canvas</option>
+  <option value="google">Google</option>
+  <option value="drive">Google Drive</option>
+  <option value="classroom">Google Classroom</option>
+  <option value="custom">Custom URL...</option>
+</select>
 
-<!-- NEW: Tab Logo (Favicon) section -->
-<label for="tabLogoInput">Change Tab Logo (Image URL):</label>
-<div style="display: flex; gap: 6px; align-items: center;">
-  <input type="text" id="tabLogoInput" class="settings-input" placeholder="Paste image URL..." />
-  <button class="btn" id="saveTabLogoBtn">Save</button>
-  <span class="checkmark" id="tabLogoCheck">✔</span>
-</div>
-  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-  <button class="btn preset-logo" data-url="https://www.wabash.edu/images2/technology/canvas.png" data-title="Canvas">Canvas</button>
-  <button class="btn preset-logo" data-url="https://gstatic.com" data-title="My Drive - Google Drive">Drive</button>
-  <button class="btn preset-logo" data-url="https://gstatic.com" data-title="Home">Classroom</button>
-</div>
+<input type="text" id="customIconUrl" class="settings-input" placeholder="Paste custom image URL (.png/.ico)" style="display:none;" />
+<input type="text" id="customTabTitle" class="settings-input" placeholder="Custom tab title (optional)" />
+<button class="btn" id="applyTabBtn">Apply Tab Logo</button>
 
 <div id="musicPlayer" style="display:none;"></div>
 <div class="cursor" id="cursor"></div>
@@ -391,44 +384,69 @@ searchInput.addEventListener('keyup', (e) => {
         recentsBtn.classList.remove('active');
     }
 });
-  const favicon = document.getElementById('favicon');
-const tabLogoInput = document.getElementById('tabLogoInput');
-const saveTabLogoBtn = document.getElementById('saveTabLogoBtn');
-const tabLogoCheck = document.getElementById('tabLogoCheck');
-
-// 1. Load saved tab logo on page load
-const savedLogo = localStorage.getItem('customTabLogo');
-if (savedLogo) {
-  favicon.href = savedLogo;
-  tabLogoInput.value = savedLogo;
-}
-
-// 2. Save new tab logo when clicking Save
-saveTabLogoBtn.addEventListener('click', () => {
-  const newLogoUrl = tabLogoInput.value.trim();
-  if (newLogoUrl) {
-    favicon.href = newLogoUrl;
-    localStorage.setItem('customTabLogo', newLogoUrl);
-
-    // Show green checkmark briefly
-    tabLogoCheck.classList.add('show');
-    setTimeout(() => tabLogoCheck.classList.remove('show'), 2000);
+  const presets = {
+  canvas: {
+    title: "Canvas",
+    icon: "https://www.wabash.edu/images2/technology/canvas.png"
+  },
+  google: {
+    title: "Google",
+    icon: "https://google.com"
+  },
+  drive: {
+    title: "My Drive - Google Drive",
+    icon: "https://gstatic.com"
+  },
+  classroom: {
+    title: "Home",
+    icon: "https://gstatic.com"
   }
+};
+
+const presetSelect = document.getElementById("tabPreset");
+const customIconInput = document.getElementById("customIconUrl");
+const customTitleInput = document.getElementById("customTabTitle");
+const applyTabBtn = document.getElementById("applyTabBtn");
+
+// Show custom URL box only if "Custom URL..." is selected
+presetSelect.addEventListener("change", () => {
+  customIconInput.style.display = presetSelect.value === "custom" ? "block" : "none";
 });
 
-// 3. (Optional) Handle preset buttons if you added them
-document.querySelectorAll('.preset-logo').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const url = btn.getAttribute('data-url');
-    const title = btn.getAttribute('data-title');
+// Function to update the tab icon and title
+function setTabCloak(title, iconUrl) {
+  if (title) document.title = title;
+  if (iconUrl) {
+    let link = document.getElementById("favicon");
+    link.href = iconUrl;
+  }
+  localStorage.setItem("savedTabTitle", title);
+  localStorage.setItem("savedTabIcon", iconUrl);
+}
 
-    favicon.href = url;
-    document.title = title;
-    tabLogoInput.value = url;
+// Apply button click event
+applyTabBtn.addEventListener("click", () => {
+  const choice = presetSelect.value;
+  let newTitle = customTitleInput.value.trim();
+  let newIcon = "";
 
-    localStorage.setItem('customTabLogo', url);
-    localStorage.setItem('customTabName', title);
-  });
+  if (choice === "custom") {
+    newIcon = customIconInput.value.trim();
+  } else {
+    newTitle = newTitle || presets[choice].title;
+    newIcon = presets[choice].icon;
+  }
+
+  setTabCloak(newTitle, newIcon);
+});
+
+// Load saved tab logo when the page opens
+window.addEventListener("DOMContentLoaded", () => {
+  const savedTitle = localStorage.getItem("savedTabTitle");
+  const savedIcon = localStorage.getItem("savedTabIcon");
+  if (savedTitle || savedIcon) {
+    setTabCloak(savedTitle, savedIcon);
+  }
 });
 </script>
 </body>
