@@ -66,6 +66,168 @@ body.light-mode .top-bar{background:rgba(255,255,255,0.9);color:#000;border-bott
   </style>
 </head>
 <body>
+  <!-- === AUTO-INJECT TAB LOGO PICKER INTO SETTINGS MODAL === -->
+<style>
+  .settings-modal, .settings-modal * {
+    cursor: pointer !important;
+  }
+  .settings-modal input {
+    cursor: text !important;
+  }
+  .tc-settings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    text-align: left;
+  }
+  body.light-mode .tc-settings-section {
+    border-top-color: rgba(0, 0, 0, 0.12);
+  }
+  .tc-settings-label {
+    font-size: 13px;
+    font-weight: bold;
+  }
+  .tc-logo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+  .tc-logo-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: inherit;
+    font-size: 12px;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .tc-logo-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: #00ffc8;
+  }
+  body.light-mode .tc-logo-btn {
+    background: #f0f0f0;
+    border-color: #ccc;
+  }
+  .tc-logo-btn img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    border-radius: 3px;
+  }
+  .tc-custom-row {
+    display: flex;
+    gap: 6px;
+  }
+</style>
+
+<script>
+(function() {
+  // 1. Force-update the browser tab icon and title
+  function applyTabCloak(newTitle, newIcon) {
+    if (newTitle) {
+      document.title = newTitle;
+      localStorage.setItem("site_cloak_title", newTitle);
+    }
+
+    if (newIcon) {
+      // Remove old favicons so browser doesn't cache the old one
+      document.querySelectorAll("link[rel*='icon']").forEach(function(el) {
+        el.remove();
+      });
+
+      // Create fresh favicon link with cache-buster
+      const link = document.createElement("link");
+      link.rel = "shortcut icon";
+      link.type = "image/png";
+      const sep = newIcon.includes("?") ? "&" : "?";
+      link.href = newIcon + sep + "v=" + Date.now();
+      document.head.appendChild(link);
+
+      localStorage.setItem("site_cloak_icon", newIcon);
+    }
+  }
+
+  // 2. Inject the logo picker directly inside your existing .settings-modal
+  function injectIntoSettings() {
+    const modal = document.querySelector(".settings-modal");
+    if (!modal || document.getElementById("tc-settings-box")) return;
+
+    const section = document.createElement("div");
+    section.id = "tc-settings-box";
+    section.className = "tc-settings-section";
+    section.innerHTML = `
+      <div class="tc-settings-label">Tab Logo:</div>
+      <div class="tc-logo-grid">
+        <button type="button" class="tc-logo-btn" data-title="Canvas" data-icon="https://wabash.edu">
+          <img src="https://wabash.edu" alt=""> Canvas
+        </button>
+        <button type="button" class="tc-logo-btn" data-title="Google" data-icon="https://google.com">
+          <img src="https://google.com" alt=""> Google
+        </button>
+        <button type="button" class="tc-logo-btn" data-title="My Drive - Google Drive" data-icon="https://gstatic.com">
+          <img src="https://gstatic.com" alt=""> Drive
+        </button>
+        <button type="button" class="tc-logo-btn" data-title="Home" data-icon="https://gstatic.com">
+          <img src="https://gstatic.com" alt=""> Classroom
+        </button>
+      </div>
+      <div class="tc-custom-row">
+        <input type="text" id="tc-modal-url" class="settings-input" placeholder="Custom logo URL (.png/.ico)" style="flex:1; font-size:12px;" />
+        <button type="button" id="tc-modal-apply" class="btn">Set</button>
+      </div>
+    `;
+
+    // Place right after the first text input (where your tab name input is), or at the bottom of the modal
+    const existingInput = modal.querySelector("input");
+    if (existingInput && existingInput.parentNode === modal) {
+      existingInput.insertAdjacentElement("afterend", section);
+    } else {
+      modal.appendChild(section);
+    }
+
+    // Handle clicking any of the 4 logo buttons
+    section.querySelectorAll(".tc-logo-btn").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        const title = btn.getAttribute("data-title");
+        const icon = btn.getAttribute("data-icon");
+        applyTabCloak(title, icon);
+
+        // Also update your existing tab name input box if present
+        if (existingInput) existingInput.value = title;
+      });
+    });
+
+    // Handle clicking "Set" for a custom image URL
+    document.getElementById("tc-modal-apply").addEventListener("click", function() {
+      const url = document.getElementById("tc-modal-url").value.trim();
+      const currentTitle = existingInput ? existingInput.value.trim() : document.title;
+      applyTabCloak(currentTitle, url);
+    });
+  }
+
+  // Run injection and restore saved logo on page load
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", injectIntoSettings);
+  } else {
+    injectIntoSettings();
+  }
+
+  const savedTitle = localStorage.getItem("site_cloak_title");
+  const savedIcon = localStorage.getItem("site_cloak_icon");
+  if (savedTitle || savedIcon) {
+    applyTabCloak(savedTitle, savedIcon);
+  }
+})();
+</script>
+<!-- === END AUTO-INJECT TAB LOGO PICKER === -->
+
 <div id="particles-js"></div>
 <div class="top-bar">
   <div class="top-left">
@@ -173,195 +335,6 @@ body.light-mode .top-bar{background:rgba(255,255,255,0.9);color:#000;border-bott
     </div>
   </div>
 </div>
-<!-- === FORCE-REFRESH TAB LOGO SWITCHER === -->
-<style>
-  #tc-wrapper, #tc-wrapper * {
-    cursor: pointer !important;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-  }
-  #tc-wrapper input {
-    cursor: text !important;
-  }
-  #tc-toggle-btn {
-    position: fixed;
-    bottom: 16px;
-    right: 16px;
-    z-index: 99998;
-    background: #1a1a1a;
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 9px 14px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: bold;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  }
-  #tc-toggle-btn:hover {
-    border-color: #00ffc8;
-    color: #00ffc8;
-  }
-  #tc-panel {
-    position: fixed;
-    bottom: 62px;
-    right: 16px;
-    width: 270px;
-    background: #181818;
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    padding: 14px;
-    z-index: 99999;
-    display: none;
-    flex-direction: column;
-    gap: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75);
-  }
-  #tc-panel.active {
-    display: flex;
-  }
-  .tc-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-  }
-  .tc-preset {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 6px;
-    color: #fff;
-    font-size: 12px;
-    text-align: left;
-  }
-  .tc-preset:hover {
-    background: rgba(0, 255, 200, 0.15);
-    border-color: #00ffc8;
-  }
-  .tc-preset img {
-    width: 18px;
-    height: 18px;
-    object-fit: contain;
-    border-radius: 3px;
-  }
-  .tc-field {
-    width: 100%;
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: #242424;
-    color: #fff;
-    font-size: 12px;
-  }
-  .tc-submit {
-    width: 100%;
-    padding: 8px;
-    border-radius: 6px;
-    border: none;
-    background: #00ffc8;
-    color: #000;
-    font-weight: bold;
-    font-size: 12px;
-  }
-  .tc-submit:hover {
-    background: #00d9aa;
-  }
-</style>
-
-<div id="tc-wrapper">
-  <button type="button" id="tc-toggle-btn">🎭 Tab Logo</button>
-
-  <div id="tc-panel">
-    <div style="font-weight:bold; font-size:13px;">Select Tab Logo</div>
-    
-    <div class="tc-grid">
-      <button type="button" class="tc-preset" data-title="Canvas" data-icon="https://wabash.edu">
-        <img src="https://wabash.edu" alt=""> Canvas
-      </button>
-      <button type="button" class="tc-preset" data-title="Google" data-icon="https://google.com">
-        <img src="https://google.com" alt=""> Google
-      </button>
-      <button type="button" class="tc-preset" data-title="My Drive - Google Drive" data-icon="https://gstatic.com">
-        <img src="https://gstatic.com" alt=""> Drive
-      </button>
-      <button type="button" class="tc-preset" data-title="Home" data-icon="https://gstatic.com">
-        <img src="https://gstatic.com" alt=""> Classroom
-      </button>
-    </div>
-
-    <div style="font-size:11px; color:#bbb; margin-top:2px;">Custom Logo & Title:</div>
-    <input type="text" id="tc-url-input" class="tc-field" placeholder="Image URL (.png or .ico)" />
-    <input type="text" id="tc-title-input" class="tc-field" placeholder="Tab Title" />
-    <button type="button" id="tc-custom-btn" class="tc-submit">Apply Custom</button>
-  </div>
-</div>
-
-<script>
-(function() {
-  const toggleBtn = document.getElementById("tc-toggle-btn");
-  const panel = document.getElementById("tc-panel");
-  const presetBtns = document.querySelectorAll(".tc-preset");
-  const customBtn = document.getElementById("tc-custom-btn");
-
-  // Open/close menu
-  toggleBtn.addEventListener("click", function() {
-    panel.classList.toggle("active");
-  });
-
-  // Force browser to replace the favicon
-  function forceChangeTab(newTitle, newIcon) {
-    if (newTitle) {
-      document.title = newTitle;
-      localStorage.setItem("site_cloak_title", newTitle);
-    }
-
-    if (newIcon) {
-      // Remove all existing icon links so browser doesn't hold onto the old one
-      const oldLinks = document.querySelectorAll("link[rel*='icon']");
-      oldLinks.forEach(function(el) {
-        el.parentNode.removeChild(el);
-      });
-
-      // Add a fresh link tag with a timestamp to bypass cache
-      const freshLink = document.createElement("link");
-      freshLink.rel = "shortcut icon";
-      freshLink.type = "image/png";
-      const separator = newIcon.includes("?") ? "&" : "?";
-      freshLink.href = newIcon + separator + "v=" + Date.now();
-      document.head.appendChild(freshLink);
-
-      localStorage.setItem("site_cloak_icon", newIcon);
-    }
-  }
-
-  // Preset button clicks
-  presetBtns.forEach(function(btn) {
-    btn.addEventListener("click", function() {
-      const title = btn.getAttribute("data-title");
-      const icon = btn.getAttribute("data-icon");
-      forceChangeTab(title, icon);
-    });
-  });
-
-  // Custom button click
-  customBtn.addEventListener("click", function() {
-    const customUrl = document.getElementById("tc-url-input").value.trim();
-    const customTitle = document.getElementById("tc-title-input").value.trim();
-    forceChangeTab(customTitle, customUrl);
-  });
-
-  // Automatically restore saved tab logo on page load
-  const savedTitle = localStorage.getItem("site_cloak_title");
-  const savedIcon = localStorage.getItem("site_cloak_icon");
-  if (savedTitle || savedIcon) {
-    forceChangeTab(savedTitle, savedIcon);
-  }
-})();
-</script>
-<!-- === END FORCE-REFRESH TAB LOGO SWITCHER === -->
 
 <div class="settings-modal" id="settingsModal">
   <label>Site Title (changes tab name):</label>
