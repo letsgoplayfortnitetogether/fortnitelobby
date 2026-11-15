@@ -531,40 +531,6 @@ presetButtons.forEach((btn) => {
   });
 });
 
-// Function to update the tab icon and title
-function setTabCloak(title, iconUrl) {
-  if (title) document.title = title;
-  if (iconUrl) {
-    document.getElementById("favicon").href = iconUrl;
-  }
-  localStorage.setItem("savedTabTitle", title);
-  localStorage.setItem("savedTabIcon", iconUrl);
-}
-
-// Apply button click event
-applyTabBtn.addEventListener("click", () => {
-  let newTitle = customTitleInput.value.trim();
-  let newIcon = "";
-
-  if (selectedPreset === "custom") {
-    newIcon = customIconInput.value.trim();
-  } else {
-    newTitle = newTitle || presets[selectedPreset].title;
-    newIcon = presets[selectedPreset].icon;
-  }
-
-  setTabCloak(newTitle, newIcon);
-});
-
-// Load saved tab logo when the page opens
-window.addEventListener("DOMContentLoaded", () => {
-  const savedTitle = localStorage.getItem("savedTabTitle");
-  const savedIcon = localStorage.getItem("savedTabIcon");
-  if (savedTitle || savedIcon) {
-    setTabCloak(savedTitle, savedIcon);
-  }
-});
-
 </script>
 </body>
 </html>
