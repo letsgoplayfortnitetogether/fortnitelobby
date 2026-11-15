@@ -7,6 +7,42 @@
 <title>Canvas</title>
 <link id="favicon" rel="icon" href="https://www.wabash.edu/images2/technology/canvas.png" type="image/png" />
 <style>
+  .preset-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.preset-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: inherit;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.preset-option:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+.preset-option.selected {
+  border-color: #00ffc8;
+  background: rgba(0, 255, 200, 0.12);
+}
+.preset-option img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  border-radius: 3px;
+}
+body.light-mode .preset-option {
+  background: #f2f2f2;
+  border-color: #ddd;
+}
+
 html, body {margin:0;padding:0;height:100%;box-sizing:border-box;overflow-x:hidden;font-family:Arial, sans-serif;-webkit-font-smoothing:antialiased;}
 body {background:#121212;color:#fff;transition:background .28s ease,color .28s ease;min-height:100vh;padding-top:48px;cursor:none;}
 .top-bar{position:fixed;top:0;left:0;right:0;height:48px;display:flex;align-items:center;justify-content:space-between;padding:6px 14px;background:rgba(26,26,26,0.78);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.03);z-index:9999;gap:12px;}
@@ -175,6 +211,32 @@ body.light-mode .top-bar{background:rgba(255,255,255,0.9);color:#000;border-bott
 
 <input type="text" id="customIconUrl" class="settings-input" placeholder="Paste custom image URL (.png/.ico)" style="display:none;" />
 <button class="btn" id="applyTabBtn">Apply Tab Logo</button>
+<label>Tab Cloak Preset:</label>
+<div class="preset-grid" id="presetGrid">
+  <button type="button" class="preset-option selected" data-preset="canvas">
+    <img src="https://wabash.edu" alt="Canvas">
+    <span>Canvas</span>
+  </button>
+  <button type="button" class="preset-option" data-preset="google">
+    <img src="https://google.com" alt="Google">
+    <span>Google</span>
+  </button>
+  <button type="button" class="preset-option" data-preset="drive">
+    <img src="https://gstatic.com" alt="Drive">
+    <span>Drive</span>
+  </button>
+  <button type="button" class="preset-option" data-preset="classroom">
+    <img src="https://gstatic.com" alt="Classroom">
+    <span>Classroom</span>
+  </button>
+  <button type="button" class="preset-option" data-preset="custom" style="grid-column: span 2;">
+    <span>🔗 Custom Image URL...</span>
+  </button>
+</div>
+
+<input type="text" id="customIconUrl" class="settings-input" placeholder="Paste custom image URL (.png/.ico)" style="display:none;" />
+<input type="text" id="customTabTitle" class="settings-input" placeholder="Custom tab title (optional)" />
+<button type="button" class="btn" id="applyTabBtn">Apply Tab Logo</button>
 
 </div>
 
@@ -419,6 +481,76 @@ applyTabBtn.addEventListener("click", () => {
   } else {
     newTitle = newTitle || presets[choice].title;
     newIcon = presets[choice].icon;
+  }
+
+  setTabCloak(newTitle, newIcon);
+});
+
+// Load saved tab logo when the page opens
+window.addEventListener("DOMContentLoaded", () => {
+  const savedTitle = localStorage.getItem("savedTabTitle");
+  const savedIcon = localStorage.getItem("savedTabIcon");
+  if (savedTitle || savedIcon) {
+    setTabCloak(savedTitle, savedIcon);
+  }
+});
+const presets = {
+  canvas: {
+    title: "Canvas",
+    icon: "https://wabash.edu"
+  },
+  google: {
+    title: "Google",
+    icon: "https://google.com"
+  },
+  drive: {
+    title: "My Drive - Google Drive",
+    icon: "https://gstatic.com"
+  },
+  classroom: {
+    title: "Home",
+    icon: "https://gstatic.com"
+  }
+};
+
+let selectedPreset = "canvas";
+const presetButtons = document.querySelectorAll(".preset-option");
+const customIconInput = document.getElementById("customIconUrl");
+const customTitleInput = document.getElementById("customTabTitle");
+const applyTabBtn = document.getElementById("applyTabBtn");
+
+// Handle clicking any visual logo button
+presetButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    presetButtons.forEach((b) => b.classList.remove("selected"));
+    btn.classList.add("selected");
+    selectedPreset = btn.getAttribute("data-preset");
+
+    // Show custom URL input only when "Custom Image URL..." is clicked
+    customIconInput.style.display = selectedPreset === "custom" ? "block" : "none";
+  });
+});
+
+// Function to update the tab icon and title
+function setTabCloak(title, iconUrl) {
+  if (title) document.title = title;
+  if (iconUrl) {
+    document.getElementById("favicon").href = iconUrl;
+  }
+  localStorage.setItem("savedTabTitle", title);
+  localStorage.setItem("savedTabIcon", iconUrl);
+}
+
+// Apply button click event
+applyTabBtn.addEventListener("click", () => {
+  let newTitle = customTitleInput.value.trim();
+  let newIcon = "";
+
+  if (selectedPreset === "custom") {
+    newIcon = customIconInput.value.trim();
+  } else {
+    newTitle = newTitle || presets[selectedPreset].title;
+    newIcon = presets[selectedPreset].icon;
   }
 
   setTabCloak(newTitle, newIcon);
