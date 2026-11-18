@@ -179,18 +179,20 @@ body.light-mode .top-bar{background:rgba(255,255,255,0.9);color:#000;border-bott
   <input type="text" id="titleInput" class="settings-input">
   <button class="btn" id="saveTitleBtn">Save</button>
   <span id="saveCheck" class="checkmark">✔</span>
+  <!-- Add this inside your .settings-modal -->
+<label for="tabPreset">Tab Cloak Preset:</label>
+<select id="tabPreset" class="settings-input">
+  <option value="canvas">Canvas</option>
+  <option value="google">Google</option>
+  <option value="drive">Google Drive</option>
+  <option value="classroom">Google Classroom</option>
+  <option value="custom">Custom URL...</option>
+</select>
 
-  <label for="tabPreset">Tab Cloak Preset:</label>
-  <select id="tabPreset" class="settings-input">
-    <option value="canvas">Canvas</option>
-    <option value="google">Google</option>
-    <option value="drive">Google Drive</option>
-    <option value="classroom">Google Classroom</option>
-    <option value="custom">Custom URL...</option>
-  </select>
+<input type="text" id="customIconUrl" class="settings-input" placeholder="Paste custom image URL (.png/.ico)" style="display:none;" />
+<input type="text" id="customTabTitle" class="settings-input" placeholder="Custom tab title (optional)" />
+<button class="btn" id="applyTabBtn">Apply Tab Logo</button>
 
-  <input type="text" id="customIconUrl" class="settings-input" placeholder="Paste custom image URL (.png/.ico)" style="display:none;" />
-  <button class="btn" id="applyTabBtn">Apply Tab Logo</button>
 </div>
 
 <div id="musicPlayer" style="display:none;"></div>
@@ -198,94 +200,6 @@ body.light-mode .top-bar{background:rgba(255,255,255,0.9);color:#000;border-bott
 
 <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 <script>
-  // 1. Preset icon & title definitions
-  const tabPresets = {
-    canvas: {
-      title: "Canvas",
-      icon: "https://wabash.edu"
-    },
-    google: {
-      title: "Google",
-      icon: "https://google.com"
-    },
-    drive: {
-      title: "My Drive - Google Drive",
-      icon: "https://gstatic.com"
-    },
-    classroom: {
-      title: "Home - Classroom",
-      icon: "https://gstatic.com"
-    }
-  };
-
-  const faviconEl = document.getElementById("favicon");
-  const titleInput = document.getElementById("titleInput");
-  const saveTitleBtn = document.getElementById("saveTitleBtn");
-  const saveCheck = document.getElementById("saveCheck");
-  const tabPreset = document.getElementById("tabPreset");
-  const customIconUrl = document.getElementById("customIconUrl");
-  const applyTabBtn = document.getElementById("applyTabBtn");
-
-  // 2. Show/hide the custom URL box when "Custom URL..." is picked
-  tabPreset.addEventListener("change", () => {
-    customIconUrl.style.display = tabPreset.value === "custom" ? "block" : "none";
-  });
-
-  // 3. Save custom site title button
-  saveTitleBtn.addEventListener("click", () => {
-    const newTitle = titleInput.value.trim();
-    if (newTitle) {
-      document.title = newTitle;
-      localStorage.setItem("savedTabTitle", newTitle);
-      saveCheck.style.display = "inline";
-      setTimeout(() => (saveCheck.style.display = "none"), 1500);
-    }
-  });
-
-  // 4. Apply Tab Logo (and matching title) button
-  applyTabBtn.addEventListener("click", () => {
-    const choice = tabPreset.value;
-
-    if (choice === "custom") {
-      const customUrl = customIconUrl.value.trim();
-      if (customUrl) {
-        faviconEl.href = customUrl;
-        localStorage.setItem("savedTabIcon", customUrl);
-        localStorage.setItem("savedPreset", "custom");
-      }
-    } else if (tabPresets[choice]) {
-      faviconEl.href = tabPresets[choice].icon;
-      document.title = tabPresets[choice].title;
-      titleInput.value = tabPresets[choice].title;
-
-      localStorage.setItem("savedTabIcon", tabPresets[choice].icon);
-      localStorage.setItem("savedTabTitle", tabPresets[choice].title);
-      localStorage.setItem("savedPreset", choice);
-    }
-  });
-
-  // 5. Restore saved settings automatically when the page reloads
-  window.addEventListener("DOMContentLoaded", () => {
-    const savedIcon = localStorage.getItem("savedTabIcon");
-    const savedTitle = localStorage.getItem("savedTabTitle");
-    const savedPreset = localStorage.getItem("savedPreset");
-
-    if (savedIcon) faviconEl.href = savedIcon;
-    if (savedTitle) {
-      document.title = savedTitle;
-      titleInput.value = savedTitle;
-    }
-    if (savedPreset) {
-      tabPreset.value = savedPreset;
-      if (savedPreset === "custom") {
-        customIconUrl.style.display = "block";
-        customIconUrl.value = savedIcon || "";
-      }
-    }
-  });
-
-  // Paste your existing particlesJS(...) config and cursor/music code below this line
-
 // ------------------ BASIC FUNCTIONS ------------------
 // Random text
 const texts = [
