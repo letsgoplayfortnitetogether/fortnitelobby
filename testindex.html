@@ -483,23 +483,6 @@ function updateTab(title, iconUrl) {
     link.href = iconUrl;
   }
 }
-
-// 5. Apply changes when "Apply Tab Logo" is clicked
-applyTabBtn.addEventListener("click", () => {
-  const selected = tabPreset.value;
-  let finalTitle = customTabTitle.value.trim();
-  let finalIcon = "";
-
-  if (selected === "custom") {
-    finalIcon = customIconUrl.value.trim();
-  } else if (presets[selected]) {
-    finalIcon = presets[selected].icon;
-    // Use the preset title only if the user didn't type a custom one
-    if (!finalTitle) finalTitle = presets[selected].title;
-  }
-
-  updateTab(finalTitle, finalIcon);
-});
 </script>
 </body>
 </html>
