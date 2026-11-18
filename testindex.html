@@ -450,6 +450,7 @@ window.addEventListener("DOMContentLoaded", () => {
     setTabCloak(savedTitle, savedIcon);
   }
 });
+  
   const presets = {
   canvas: { title: "Dashboard", icon: "https://..." },
   google: { title: "Google", icon: "https://..." },
@@ -458,7 +459,8 @@ window.addEventListener("DOMContentLoaded", () => {
   // Add this line (make sure the path matches where newtablogo.png is saved):
   newtab: { title: "New Tab", icon: "newtablogo.png" } 
 };
-else if (preset === "newtab") {
+
+  else if (preset === "newtab") {
   iconUrl = "newtablogo.png";
   tabTitle = "New Tab";
 }
