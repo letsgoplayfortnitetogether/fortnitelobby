@@ -186,6 +186,7 @@ body.light-mode .top-bar{background:rgba(255,255,255,0.9);color:#000;border-bott
   <option value="google">Google</option>
   <option value="drive">Google Drive</option>
   <option value="classroom">Google Classroom</option>
+  <option value="newtab">New Tab</option>
   <option value="custom">Custom URL...</option>
 </select>
 
@@ -234,6 +235,66 @@ const settingsModal = document.getElementById('settingsModal');
 const titleInput = document.getElementById('titleInput');
 const saveTitleBtn = document.getElementById('saveTitleBtn');
 const saveCheck = document.getElementById('saveCheck');
+
+// TAB CLOAK ELEMENTS
+const tabPreset = document.getElementById('tabPreset');
+const customIconUrl = document.getElementById('customIconUrl');
+const customTabTitle = document.getElementById('customTabTitle');
+const applyTabBtn = document.getElementById('applyTabBtn');
+
+const tabPresets = {
+  canvas: { title: "Canvas", icon: "https://cloudfront.net" },
+  google: { title: "Google", icon: "https://google.com" },
+  drive: { title: "My Drive - Google Drive", icon: "https://gstatic.com" },
+  classroom: { title: "Classes", icon: "https://gstatic.com" },
+  newtab: { title: "New Tab", icon: "newtablogo.png" }
+};
+
+function setFavicon(url) {
+  let link = document.querySelector("link[rel~='icon']");
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'icon';
+    document.head.appendChild(link);
+  }
+  link.href = url;
+}
+
+// Load saved favicon on page load
+const savedIcon = localStorage.getItem('siteIcon');
+if (savedIcon) setFavicon(savedIcon);
+
+// Show/hide custom URL input
+tabPreset.addEventListener('change', () => {
+  customIconUrl.style.display = tabPreset.value === 'custom' ? 'block' : 'none';
+});
+
+// Apply Tab Logo & Title
+applyTabBtn.addEventListener('click', () => {
+  const selected = tabPreset.value;
+  let newTitle = customTabTitle.value.trim();
+  let newIcon = "";
+
+  if (selected === 'custom') {
+    newIcon = customIconUrl.value.trim();
+  } else if (tabPresets[selected]) {
+    newIcon = tabPresets[selected].icon;
+    if (!newTitle) newTitle = tabPresets[selected].title;
+  }
+
+  if (newTitle) {
+    document.title = newTitle;
+    localStorage.setItem('siteTitle', newTitle);
+  }
+  if (newIcon) {
+    setFavicon(newIcon);
+    localStorage.setItem('siteIcon', newIcon);
+  }
+
+  saveCheck.classList.add('show');
+  setTimeout(() => saveCheck.classList.remove('show'), 1500);
+  settingsModal.classList.remove('show');
+});
 
 settingsBtn.addEventListener('click', () => {
   titleInput.value = document.title;
