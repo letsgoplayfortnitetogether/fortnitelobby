@@ -450,21 +450,56 @@ window.addEventListener("DOMContentLoaded", () => {
     setTabCloak(savedTitle, savedIcon);
   }
 });
-  
-  const presets = {
-  canvas: { title: "Dashboard", icon: "https://..." },
-  google: { title: "Google", icon: "https://..." },
-  drive: { title: "My Drive - Google Drive", icon: "https://..." },
-  classroom: { title: "Classes", icon: "https://..." },
-  // Add this line (make sure the path matches where newtablogo.png is saved):
-  newtab: { title: "New Tab", icon: "newtablogo.png" } 
+// 1. All presets combined into one object (replaces the need for if/else statements)
+const presets = {
+  canvas: { title: "Dashboard", icon: "https://cloudfront.net" },
+  google: { title: "Google", icon: "https://google.com" },
+  drive: { title: "My Drive - Google Drive", icon: "https://gstatic.com" },
+  classroom: { title: "Classes", icon: "https://gstatic.com" },
+  newtab: { title: "New Tab", icon: "newtablogo.png" } // Your local file
 };
 
-  else if (preset === "newtab") {
-  iconUrl = "newtablogo.png";
-  tabTitle = "New Tab";
+// 2. Grab elements from your HTML
+const tabPreset = document.getElementById("tabPreset");
+const customIconUrl = document.getElementById("customIconUrl");
+const customTabTitle = document.getElementById("customTabTitle");
+const applyTabBtn = document.getElementById("applyTabBtn");
+
+// 3. Show or hide the Custom URL input when the dropdown changes
+tabPreset.addEventListener("change", () => {
+  customIconUrl.style.display = tabPreset.value === "custom" ? "block" : "none";
+});
+
+// 4. Function to update the browser tab's icon and title
+function updateTab(title, iconUrl) {
+  if (title) document.title = title;
+  if (iconUrl) {
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+    link.href = iconUrl;
+  }
 }
 
+// 5. Apply changes when "Apply Tab Logo" is clicked
+applyTabBtn.addEventListener("click", () => {
+  const selected = tabPreset.value;
+  let finalTitle = customTabTitle.value.trim();
+  let finalIcon = "";
+
+  if (selected === "custom") {
+    finalIcon = customIconUrl.value.trim();
+  } else if (presets[selected]) {
+    finalIcon = presets[selected].icon;
+    // Use the preset title only if the user didn't type a custom one
+    if (!finalTitle) finalTitle = presets[selected].title;
+  }
+
+  updateTab(finalTitle, finalIcon);
+});
 </script>
 </body>
 </html>
