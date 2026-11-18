@@ -236,30 +236,6 @@ const titleInput = document.getElementById('titleInput');
 const saveTitleBtn = document.getElementById('saveTitleBtn');
 const saveCheck = document.getElementById('saveCheck');
 
-// TAB CLOAK ELEMENTS
-const tabPreset = document.getElementById('tabPreset');
-const customIconUrl = document.getElementById('customIconUrl');
-const customTabTitle = document.getElementById('customTabTitle');
-const applyTabBtn = document.getElementById('applyTabBtn');
-
-const tabPresets = {
-  canvas: { title: "Canvas", icon: "https://cloudfront.net" },
-  google: { title: "Google", icon: "https://google.com" },
-  drive: { title: "My Drive - Google Drive", icon: "https://gstatic.com" },
-  classroom: { title: "Classes", icon: "https://gstatic.com" },
-  newtab: { title: "New Tab", icon: "newtablogo.png" }
-};
-
-function setFavicon(url) {
-  let link = document.querySelector("link[rel~='icon']");
-  if (!link) {
-    link = document.createElement('link');
-    link.rel = 'icon';
-    document.head.appendChild(link);
-  }
-  link.href = url;
-}
-
 // Load saved favicon on page load
 const savedIcon = localStorage.getItem('siteIcon');
 if (savedIcon) setFavicon(savedIcon);
@@ -446,7 +422,7 @@ searchInput.addEventListener('keyup', (e) => {
         recentsBtn.classList.remove('active');
     }
 });
-  const presets = {
+const presets = {
   canvas: {
     title: "Canvas",
     icon: "https://www.wabash.edu/images2/technology/canvas.png"
@@ -462,6 +438,10 @@ searchInput.addEventListener('keyup', (e) => {
   classroom: {
     title: "Home",
     icon: "https://gstatic.com"
+  },
+  newtab: {
+    title: "New Tab",
+    icon: "newtablogo.png"
   }
 };
 
