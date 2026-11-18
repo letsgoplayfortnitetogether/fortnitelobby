@@ -245,49 +245,6 @@ tabPreset.addEventListener('change', () => {
   customIconUrl.style.display = tabPreset.value === 'custom' ? 'block' : 'none';
 });
 
-// Apply Tab Logo & Title
-applyTabBtn.addEventListener('click', () => {
-  const selected = tabPreset.value;
-  let newTitle = customTabTitle.value.trim();
-  let newIcon = "";
-
-  if (selected === 'custom') {
-    newIcon = customIconUrl.value.trim();
-  } else if (tabPresets[selected]) {
-    newIcon = tabPresets[selected].icon;
-    if (!newTitle) newTitle = tabPresets[selected].title;
-  }
-
-  if (newTitle) {
-    document.title = newTitle;
-    localStorage.setItem('siteTitle', newTitle);
-  }
-  if (newIcon) {
-    setFavicon(newIcon);
-    localStorage.setItem('siteIcon', newIcon);
-  }
-
-  saveCheck.classList.add('show');
-  setTimeout(() => saveCheck.classList.remove('show'), 1500);
-  settingsModal.classList.remove('show');
-});
-
-settingsBtn.addEventListener('click', () => {
-  titleInput.value = document.title;
-  settingsModal.classList.add('show');
-});
-saveTitleBtn.addEventListener('click', () => {
-  localStorage.setItem('siteTitle', titleInput.value);
-  document.title = titleInput.value || "Canvas";
-  saveCheck.classList.add('show');
-  setTimeout(()=>saveCheck.classList.remove('show'),1500);
-  settingsModal.classList.remove('show');
-});
-document.addEventListener('keydown', e => {
-  if (e.key === "Escape" && settingsModal.classList.contains('show')) settingsModal.classList.remove('show');
-  if (e.key==="q") window.location.href="https://www.instructure.com/canvas/login";
-});
-
 // YOUTUBE MUSIC PLAYER
 var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api"; document.body.appendChild(tag);
 var musicPlayer, musicIsPlaying = false;
