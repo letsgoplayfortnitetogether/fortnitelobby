@@ -236,13 +236,22 @@ const titleInput = document.getElementById('titleInput');
 const saveTitleBtn = document.getElementById('saveTitleBtn');
 const saveCheck = document.getElementById('saveCheck');
 
-// Load saved favicon on page load
-const savedIcon = localStorage.getItem('siteIcon');
-if (savedIcon) setFavicon(savedIcon);
+settingsBtn.addEventListener('click', () => {
+  titleInput.value = document.title;
+  settingsModal.classList.add('show');
+});
 
-// Show/hide custom URL input
-tabPreset.addEventListener('change', () => {
-  customIconUrl.style.display = tabPreset.value === 'custom' ? 'block' : 'none';
+saveTitleBtn.addEventListener('click', () => {
+  localStorage.setItem('siteTitle', titleInput.value);
+  document.title = titleInput.value || "Canvas";
+  saveCheck.classList.add('show');
+  setTimeout(() => saveCheck.classList.remove('show'), 1500);
+  settingsModal.classList.remove('show');
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === "Escape" && settingsModal.classList.contains('show')) settingsModal.classList.remove('show');
+  if (e.key === "q") window.location.href = "https://instructure.com";
 });
 
 // YOUTUBE MUSIC PLAYER
