@@ -230,20 +230,13 @@ document.getElementById("modeToggle").onclick = () => document.body.classList.to
 // SETTINGS MODAL
 const settingsBtn = document.getElementById('settingsBtn');
 const settingsModal = document.getElementById('settingsModal');
-const titleInput = document.getElementById('titleInput');
-const saveTitleBtn = document.getElementById('saveTitleBtn');
-const saveCheck = document.getElementById('saveCheck');
+const closeSettingsBtn = document.getElementById('closeSettingsBtn');
 
 settingsBtn.addEventListener('click', () => {
-  titleInput.value = document.title;
   settingsModal.classList.add('show');
 });
 
-saveTitleBtn.addEventListener('click', () => {
-  localStorage.setItem('siteTitle', titleInput.value);
-  document.title = titleInput.value || "Canvas";
-  saveCheck.classList.add('show');
-  setTimeout(() => saveCheck.classList.remove('show'), 1500);
+closeSettingsBtn.addEventListener('click', () => {
   settingsModal.classList.remove('show');
 });
 
