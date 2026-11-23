@@ -174,22 +174,24 @@ body.light-mode .top-bar{background:rgba(255,255,255,0.9);color:#000;border-bott
   </div>
 </div>
 
-<div class="settings-modal" id="settingsModal">
+  <div class="settings-modal" id="settingsModal">
   <button id="closeSettingsBtn" aria-label="Close settings" style="position: absolute; top: 10px; right: 14px; background: none; border: none; color: inherit; font-size: 22px; cursor: pointer;">&times;</button>
 
   <label for="tabPreset">Tab Cloak Preset:</label>
-<select id="tabPreset" class="settings-input" style="color: white; background-color: black;">
-  <option value="canvas">Canvas</option>
-  <option value="google">Google</option>
-  <option value="drive">Google Drive</option>
-  <option value="classroom">Google Classroom</option>
-  <option value="newtab">New Tab</option>
-</select>
+  <select id="tabPreset" class="settings-input">
+    <option value="canvas">Canvas</option>
+    <option value="google">Google</option>
+    <option value="drive">Google Drive</option>
+    <option value="classroom">Google Classroom</option>
+    <option value="newtab">New Tab</option>
+    <option value="custom">Custom URL...</option>
+  </select>
 
-  <input type="text" id="customIconUrl" class="settings-input" placeholder="Paste custom image URL (.png/.ico)" style="display:none; color: white; background-color: black;" />
-  <input type="text" id="customTabTitle" class="settings-input" placeholder="Custom tab title (optional)" style="color: black; background-color: white;" />
-  <button class="btn" id="applyTabBtn" style="color: white; background-color: #333333;">Apply Tab Logo</button>
+  <input type="text" id="customIconUrl" class="settings-input" placeholder="Paste custom image URL (.png/.ico)" style="display:none;" />
+  <input type="text" id="customTabTitle" class="settings-input" placeholder="Custom tab title (optional)" />
+  <button class="btn" id="applyTabBtn">Apply Tab Logo</button>
 </div>
+
 
 <div id="musicPlayer" style="display:none;"></div>
 <div class="cursor" id="cursor"></div>
