@@ -3,98 +3,350 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Canvas</title>
+  <title>Canvas Chat</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --private-bg: #290d30;
+      --private-bg: #160b24;
       --private-primary: #a855f7;
-      --public-bg: #111827;
+      --public-bg: #080f1d;
       --public-primary: #10b981;
+      --panel: rgba(22, 33, 52, 0.82);
+      --border: rgba(148, 163, 184, 0.13);
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--public-bg);
-      transition: background-color 0.4s ease;
+      background:
+        radial-gradient(ellipse at 15% 10%, rgba(16,185,129,.13), transparent 38%),
+        radial-gradient(ellipse at 85% 85%, rgba(59,130,246,.12), transparent 38%),
+        var(--public-bg);
+      color: white;
+      transition: background .5s ease;
     }
 
-    .private-mode {
-      background-color: var(--private-bg);
+    body.private-mode {
+      background:
+        radial-gradient(ellipse at 15% 10%, rgba(168,85,247,.20), transparent 40%),
+        radial-gradient(ellipse at 85% 85%, rgba(126,34,206,.14), transparent 40%),
+        var(--private-bg);
     }
 
-    /* Smooth button tactile feel */
     button {
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button, input, textarea {
+      font-family: inherit;
+    }
+
+    .main-title {
+      letter-spacing: -1.8px;
+      text-shadow: 0 0 35px currentColor;
+    }
+
+    .panel {
+      background: var(--panel);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      transition: border-color .3s, transform .3s;
+    }
+
+    .chat-panel {
+      min-height: 500px;
+    }
+
+    .message {
+      background: rgba(51,65,85,.38);
+      border: 1px solid rgba(148,163,184,.09);
+      border-radius: 14px;
+      padding: 13px 15px;
+      animation: appear .3s ease both;
+      transition: background .2s, transform .2s;
+    }
+
+    .message:hover {
+      background: rgba(71,85,105,.42);
+      transform: translateY(-1px);
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .input-field {
+      background: rgba(15,23,42,.7);
+      border: 1px solid rgba(148,163,184,.17);
+      color: white;
+      outline: none;
+      transition: all .25s ease;
+    }
+
+    .input-field::placeholder {
+      color: #8491a5;
+    }
+
+    .input-field:focus {
+      border-color: var(--public-primary);
+      box-shadow: 0 0 0 3px rgba(16,185,129,.13);
+      background: rgba(15,23,42,.95);
+    }
+
+    .primary-button {
+      background: var(--public-primary);
+      box-shadow: 0 8px 25px rgba(16,185,129,.22);
+      transition: all .22s ease;
+    }
+
+    .primary-button:hover {
+      filter: brightness(1.12);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(16,185,129,.3);
+    }
+
+    .primary-button:active,
+    button:active {
+      transform: scale(.97);
+    }
+
+    .secondary-button {
+      transition: all .22s ease;
+    }
+
+    .secondary-button:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.15);
+    }
+
+    .private-mode .main-title {
+      color: var(--private-primary) !important;
+    }
+
+    .private-mode .chat-header {
+      background: var(--private-primary) !important;
+    }
+
+    .private-mode .primary-button {
+      background: var(--private-primary) !important;
+      box-shadow: 0 8px 25px rgba(168,85,247,.25);
+    }
+
+    .private-mode .input-field:focus {
+      border-color: var(--private-primary);
+      box-shadow: 0 0 0 3px rgba(168,85,247,.15);
+    }
+
+    .private-mode .message-name {
+      color: var(--private-primary) !important;
+    }
+
+    .private-mode .message:hover {
+      background: rgba(126,58,180,.15);
+    }
+
+    .chat-header {
+      background: var(--public-primary);
+      transition: background .4s ease;
+    }
+
+    #feedbackList::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #feedbackList::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #feedbackList::-webkit-scrollbar-thumb {
+      background: rgba(148,163,184,.3);
+      border-radius: 20px;
+    }
+
+    #feedbackList::-webkit-scrollbar-thumb:hover {
+      background: rgba(148,163,184,.55);
+    }
+
+    .empty-state {
+      color: #8491a5;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 16px !important;
+      }
+
+      .main-title {
+        font-size: 2.3rem;
+        margin-top: 18px;
+        margin-bottom: 25px;
+      }
+
+      .chat-panel {
+        height: 420px;
+        min-height: 420px;
+      }
     }
   </style>
 </head>
+
 <body id="chatBody" class="min-h-screen flex flex-col items-center p-4 transition-colors">
 
-  <h1 id="titleText" class="text-4xl font-extrabold mb-8 mt-6 tracking-wide transition-colors" style="color: var(--public-primary);">
-    Public Chat
-  </h1>
+  <div class="w-full max-w-4xl">
 
-  <div class="w-full max-w-4xl flex flex-col lg:flex-row gap-6">
-    <!-- Message List Container -->
-    <div class="flex-1 bg-gray-800 rounded-xl shadow-2xl overflow-hidden flex flex-col h-[500px] border border-gray-700">
-      <div id="chatTitleContainer" class="p-4 text-white font-semibold text-lg transition-colors" style="background-color: var(--public-primary);">
-        <h2 class="text-white">Messages</h2>
+    <div class="text-center mb-8 mt-5">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-700/60 bg-gray-800/40 text-xs font-semibold tracking-widest text-gray-400 uppercase mb-4">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        Canvas Community
       </div>
-      <ul id="feedbackList" class="flex-1 overflow-y-auto space-y-2 p-4 text-gray-200">
-        <!-- Messages will be injected here -->
-      </ul>
+
+      <h1 id="titleText" class="main-title text-4xl font-extrabold tracking-tight transition-colors" style="color: var(--public-primary);">
+        Public Chat
+      </h1>
+
+      <p class="text-gray-400 text-sm mt-3">
+        Connect, chat, and share your thoughts.
+      </p>
     </div>
 
-    <!-- Input and Controls Container -->
-    <div class="lg:w-96 bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700 flex flex-col">
-      <input type="text" id="name" placeholder="Your Name" maxlength="30"
-        class="w-full p-3 mb-4 rounded-xl bg-gray-700/80 text-white placeholder-gray-400 focus:outline-none focus:ring-2 border border-gray-600 transition-all">
+    <div class="w-full flex flex-col lg:flex-row gap-5">
 
-      <textarea id="feedback" placeholder="Your Message (Max 200 chars)" maxlength="200"
-        class="w-full h-24 p-3 mb-5 rounded-xl bg-gray-700/80 text-white placeholder-gray-400 focus:outline-none focus:ring-2 border border-gray-600 resize-none transition-all"></textarea>
+      <!-- MESSAGE PANEL -->
+      <div class="panel chat-panel flex-1 rounded-2xl overflow-hidden flex flex-col">
 
-      <!-- Action Buttons -->
-      <div class="flex flex-col space-y-3">
-        <button id="sendBtn"
-          class="group w-full py-3.5 px-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] shadow-lg">
-          <span>Send Message</span>
-          <svg class="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
-        </button>
+        <div id="chatTitleContainer" class="chat-header p-4 px-5 text-white font-semibold text-lg flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h8m-8 4h5m-9 7l3.5-3H17a4 4 0 004-4V6a4 4 0 00-4-4H7a4 4 0 00-4 4v9a4 4 0 004 4z"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-white">Messages</h2>
+              <p class="text-white/70 text-xs font-medium">Community conversation</p>
+            </div>
+          </div>
 
-        <button id="privateBtn"
-          class="w-full py-3 px-4 rounded-xl font-semibold text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 hover:border-indigo-400/60 flex items-center justify-center gap-2 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]">
-          <svg id="lockIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-          <span id="privateBtnText">Switch to Private Chat</span>
-        </button>
+          <div class="text-xs bg-white/15 rounded-full px-3 py-1.5">
+            Live chat
+          </div>
+        </div>
+
+        <ul id="feedbackList" class="flex-1 overflow-y-auto space-y-3 p-4 sm:p-5 text-gray-200">
+          <!-- Messages injected here -->
+        </ul>
+
       </div>
 
-      <!-- Divider -->
-      <div class="border-t border-gray-700/80 my-4"></div>
+      <!-- CONTROLS PANEL -->
+      <div class="panel lg:w-96 rounded-2xl p-5 sm:p-6 flex flex-col">
 
-      <!-- Utility Buttons -->
-      <div class="flex space-x-3">
-        <button id="homeBtn"
-          class="flex-1 py-2.5 px-3 rounded-xl font-medium text-gray-300 bg-gray-700/60 hover:bg-gray-700 border border-gray-600/50 hover:border-gray-500 flex items-center justify-center gap-1.5 transition-all duration-200 active:scale-[0.97] text-sm">
-          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-          <span>Home</span>
-        </button>
+        <div class="mb-5">
+          <h2 class="text-white font-bold text-lg">Send a message</h2>
+          <p class="text-gray-400 text-xs mt-1">Share something with the community.</p>
+        </div>
 
-        <button id="deleteAllBtn"
-          class="flex-1 py-2.5 px-3 rounded-xl font-medium text-red-400 bg-red-500/10 hover:bg-red-600 hover:text-white border border-red-500/30 hover:border-red-600 flex items-center justify-center gap-1.5 transition-all duration-200 active:scale-[0.97] text-sm">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
-          <span>Delete All</span>
-        </button>
+        <label for="name" class="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">
+          Your name
+        </label>
+
+        <input
+          type="text"
+          id="name"
+          placeholder="Enter your name..."
+          maxlength="30"
+          class="input-field w-full p-3.5 mb-4 rounded-xl text-sm"
+        >
+
+        <label for="feedback" class="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">
+          Your message
+        </label>
+
+        <textarea
+          id="feedback"
+          placeholder="Write something..."
+          maxlength="200"
+          class="input-field w-full h-28 p-3.5 mb-5 rounded-xl text-sm resize-none"
+        ></textarea>
+
+        <!-- ACTION BUTTONS -->
+        <div class="flex flex-col space-y-3">
+
+          <button id="sendBtn"
+            class="primary-button group w-full py-3.5 px-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-all duration-200">
+
+            <span>Send Message</span>
+
+            <svg class="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+          </button>
+
+          <button id="privateBtn"
+            class="secondary-button w-full py-3 px-4 rounded-xl font-semibold text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 hover:border-indigo-400/60 flex items-center justify-center gap-2 transition-all duration-200">
+
+            <svg id="lockIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+
+            <span id="privateBtnText">Switch to Private Chat</span>
+          </button>
+
+        </div>
+
+        <div class="border-t border-gray-700/70 my-5"></div>
+
+        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+          Quick actions
+        </div>
+
+        <!-- UTILITY BUTTONS -->
+        <div class="flex gap-3">
+
+          <button id="homeBtn"
+            class="secondary-button flex-1 py-3 px-3 rounded-xl font-medium text-gray-300 bg-gray-700/40 hover:bg-gray-700/80 border border-gray-600/50 hover:border-gray-500 flex items-center justify-center gap-2 transition-all duration-200 text-sm">
+
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+
+            <span>Home</span>
+          </button>
+
+          <button id="deleteAllBtn"
+            class="secondary-button flex-1 py-3 px-3 rounded-xl font-medium text-red-400 bg-red-500/10 hover:bg-red-600 hover:text-white border border-red-500/30 hover:border-red-600 flex items-center justify-center gap-2 transition-all duration-200 text-sm">
+
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+
+            <span>Delete All</span>
+          </button>
+
+        </div>
+
+        <div class="mt-auto pt-6 text-center">
+          <p class="text-gray-600 text-xs">Canvas Chat • Community Space</p>
+        </div>
+
       </div>
     </div>
+
+    <footer class="text-center text-gray-600 text-xs mt-8 mb-4">
+      Made for the Canvas community
+    </footer>
+
   </div>
 
   <script>
@@ -110,6 +362,7 @@
     const feedbackInput = document.getElementById('feedback');
 
     let privateRoom = false;
+
     const STORAGE_KEY = 'canvas_chat_messages';
     const PUBLIC_CODE = "Switch to Private Chat";
     const PRIVATE_CODE = "Switch to Public Chat";
@@ -122,26 +375,33 @@
 
     function containsBadWords(text) {
       const normalizedText = text.toLowerCase();
+
       for (const word of badWordsList) {
         const wordRegex = new RegExp(`\\b${word}\\b`, 'g');
+
         if (wordRegex.test(normalizedText)) {
           return true;
         }
+
         if (['@ss', '@$$', 'sh!t', 'sh1t', 'd!ck', 'f*ck'].includes(word) && normalizedText.includes(word)) {
           return true;
         }
       }
+
       return false;
     }
 
     function maskBadWords(text) {
       let masked = text;
+
       for (const word of badWordsList) {
         const wordRegex = new RegExp(`\\b${word}\\b`, 'gi');
+
         if (wordRegex.test(masked)) {
-          masked = masked.replace(wordRegex, (match) => '*'.repeat(match.length));
+          masked = masked.replace(wordRegex, match => '*'.repeat(match.length));
         }
       }
+
       return masked;
     }
 
@@ -158,139 +418,192 @@
     }
 
     function updateTheme() {
-      const currentPrimary = privateRoom ? 'var(--private-primary)' : 'var(--public-primary)';
-      const glowColor = privateRoom ? 'rgba(168, 85, 247, 0.35)' : 'rgba(16, 185, 129, 0.35)';
+      const currentPrimary = privateRoom
+        ? 'var(--private-primary)'
+        : 'var(--public-primary)';
 
       chatBody.classList.toggle('private-mode', privateRoom);
+
       titleText.textContent = privateRoom ? 'Private Chat' : 'Public Chat';
+
       titleText.style.color = currentPrimary;
       chatTitleContainer.style.backgroundColor = currentPrimary;
 
-      // Primary Send Button styling & dynamic glow
       sendBtn.style.backgroundColor = currentPrimary;
-      sendBtn.style.boxShadow = `0 8px 20px -4px ${glowColor}`;
-      sendBtn.onmouseover = () => {
-        sendBtn.style.backgroundColor = privateRoom ? '#9333ea' : '#059669';
-      };
-      sendBtn.onmouseout = () => {
-        sendBtn.style.backgroundColor = currentPrimary;
-      };
 
-      // Update Input Focus Rings
-      [nameInput, feedbackInput].forEach(input => {
-        if (privateRoom) {
-          input.classList.remove('focus:ring-emerald-400', 'focus:border-emerald-400');
-          input.classList.add('focus:ring-purple-400', 'focus:border-purple-400');
-        } else {
-          input.classList.remove('focus:ring-purple-400', 'focus:border-purple-400');
-          input.classList.add('focus:ring-emerald-400', 'focus:border-emerald-400');
-        }
-      });
+      privateBtnText.textContent = privateRoom
+        ? PRIVATE_CODE
+        : PUBLIC_CODE;
 
-      privateBtnText.textContent = privateRoom ? PRIVATE_CODE : PUBLIC_CODE;
+      const lockIcon = document.getElementById('lockIcon');
+
+      if (privateRoom) {
+        lockIcon.innerHTML = `
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M5 11h14a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7a2 2 0 012-2zm3 0V7a4 4 0 018 0v4"/>
+        `;
+      } else {
+        lockIcon.innerHTML = `
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        `;
+      }
     }
 
     function loadFeedback() {
       const allMessages = getMessages();
       const filtered = allMessages.filter(m => m.private === privateRoom);
+
       feedbackList.innerHTML = '';
+
+      if (filtered.length === 0) {
+        const empty = document.createElement('div');
+
+        empty.className = 'empty-state h-full min-h-48 flex flex-col items-center justify-center text-center gap-3';
+
+        empty.innerHTML = `
+          <div class="w-14 h-14 rounded-2xl bg-gray-700/40 flex items-center justify-center">
+            <svg class="w-7 h-7 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M8 10h8m-8 4h5m-9 7l3.5-3H17a4 4 0 004-4V6a4 4 0 00-4-4H7a4 4 0 00-4 4v9a4 4 0 004 4z"/>
+            </svg>
+          </div>
+          <p class="font-semibold text-gray-400">No messages yet</p>
+          <p class="text-xs text-gray-600">Be the first to start the conversation!</p>
+        `;
+
+        feedbackList.appendChild(empty);
+        return;
+      }
 
       filtered.forEach(f => {
         const li = document.createElement('li');
-        li.className = 'py-2 px-3 bg-gray-700 rounded-lg shadow-inner break-words';
+
+        li.className = 'message break-words';
 
         const headerDiv = document.createElement('div');
-        headerDiv.className = 'flex justify-between items-baseline mb-0.5';
+        headerDiv.className = 'flex justify-between items-baseline gap-3 mb-2';
 
         const nameSpan = document.createElement('span');
-        nameSpan.className = 'font-bold transition-colors';
-        nameSpan.style.color = privateRoom ? 'var(--private-primary)' : 'var(--public-primary)';
+
+        nameSpan.className = 'message-name font-bold text-sm transition-colors';
+        nameSpan.style.color = privateRoom
+          ? 'var(--private-primary)'
+          : 'var(--public-primary)';
+
         nameSpan.textContent = maskBadWords(f.name);
 
         const timeSpan = document.createElement('span');
-        timeSpan.className = 'text-xs text-gray-400';
+
+        timeSpan.className = 'text-xs text-gray-500 shrink-0';
         timeSpan.textContent = f.time || '';
 
         const msgSpan = document.createElement('div');
-        msgSpan.className = 'whitespace-pre-wrap';
+
+        msgSpan.className = 'whitespace-pre-wrap text-sm leading-relaxed text-gray-200';
         msgSpan.textContent = maskBadWords(f.feedback);
 
         headerDiv.appendChild(nameSpan);
         headerDiv.appendChild(timeSpan);
+
         li.appendChild(headerDiv);
         li.appendChild(msgSpan);
+
         feedbackList.appendChild(li);
       });
     }
 
-function sendMessage() {
-const name = nameInput.value.trim();
-const feedback = feedbackInput.value.trim();
-if (!name || !feedback) {
-alert("Please fill in both your name and message.");
-return;
-}
-if (containsBadWords(feedback)) {
-alert("Your message contains forbidden language. Please revise it before sending.");
-return;
-}
-const now = new Date();
-const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-const allMessages = getMessages();
-allMessages.unshift({
-id: Date.now(),
-name,
-feedback,
-time: timeStr,
-private: privateRoom
-});
-saveMessages(allMessages);
-feedbackInput.value = '';
-loadFeedback();
-}
-sendBtn.addEventListener('click', sendMessage);
-feedbackInput.addEventListener('keydown', (e) => {
-if (e.key === 'Enter' && !e.shiftKey) {
-e.preventDefault();
-sendMessage();
-}
-});
-privateBtn.addEventListener('click', () => {
-if (privateRoom) {
-privateRoom = false;
-updateTheme();
-loadFeedback();
-return;
-}
-const code = prompt("Enter private chat code:");
-if (code === "savnaclive") {
-privateRoom = true;
-updateTheme();
-loadFeedback();
-} else {
-alert("Incorrect code!");
-}
-});
-deleteAllBtn.addEventListener('click', () => {
-const pin = prompt("Enter PIN to delete all messages:");
-if (pin !== "savnacsigma") {
-alert("Incorrect PIN!");
-return;
+    function sendMessage() {
+      const name = nameInput.value.trim();
+      const feedback = feedbackInput.value.trim();
+
+      if (!name || !feedback) {
+        alert("Please fill in both your name and message.");
+        return;
+      }
+
+      if (containsBadWords(feedback)) {
+        alert("Your message contains forbidden language. Please revise it before sending.");
+        return;
+      }
+
+      const now = new Date();
+
+      const timeStr = now.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      const allMessages = getMessages();
+
+      allMessages.unshift({
+        id: Date.now(),
+        name,
+        feedback,
+        time: timeStr,
+        private: privateRoom
+      });
+
+      saveMessages(allMessages);
+
+      feedbackInput.value = '';
+
+      loadFeedback();
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+
+    feedbackInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    privateBtn.addEventListener('click', () => {
+      if (privateRoom) {
+        privateRoom = false;
+        updateTheme();
+        loadFeedback();
+        return;
+      }
+
+      const code = prompt("Enter private chat code:");
+
+      if (code === "savnaclive") {
+        privateRoom = true;
+        updateTheme();
+        loadFeedback();
+      } else {
+        alert("Incorrect code!");
+      }
+    });
+
+    deleteAllBtn.addEventListener('click', () => {
+      const pin = prompt("Enter PIN to delete all messages:");
+
+      if (pin !== "savnacsigma") {
+        alert("Incorrect PIN!");
+        return;
       }
 
       if (!confirm("Are you sure you want to delete all messages?")) return;
 
       const remaining = getMessages().filter(m => m.private !== privateRoom);
+
       saveMessages(remaining);
       loadFeedback();
     });
 
-    document.getElementById('homeBtn').addEventListener('click', () => window.location.href = "index.html");
+    document.getElementById('homeBtn').addEventListener('click', () => {
+      window.location.href = "index.html";
+    });
 
     window.addEventListener('storage', loadFeedback);
 
     updateTheme();
     loadFeedback();
   </script>
+
 </body>
 </html>
