@@ -1,0 +1,1169 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Canvas</title>
+<link id="favicon" rel="icon" href="https://www.wabash.edu/images2/technology/canvas.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg-main:#090b10;
+  --glass-bg:rgba(17,21,33,.78);
+  --glass-border:rgba(255,255,255,.09);
+  --card-bg:rgba(255,255,255,.035);
+  --card-hover:rgba(0,240,255,.09);
+  --text-main:#f1f5f9;
+  --text-muted:#94a3b8;
+  --accent:#00f0ff;
+  --accent2:#8b5cf6;
+  --glow:rgba(0,240,255,.3);
+  --scrollbar:rgba(0,240,255,.3);
+}
+
+body.light-mode {
+  --bg-main:#edf2f8;
+  --glass-bg:rgba(255,255,255,.86);
+  --glass-border:rgba(15,23,42,.1);
+  --card-bg:rgba(15,23,42,.035);
+  --card-hover:rgba(2,132,199,.1);
+  --text-main:#0f172a;
+  --text-muted:#64748b;
+  --accent:#0284c7;
+  --accent2:#6366f1;
+  --glow:rgba(2,132,199,.2);
+  --scrollbar:rgba(2,132,199,.3);
+}
+
+* {box-sizing:border-box}
+
+html,body {
+  margin:0;
+  padding:0;
+  min-height:100%;
+  font-family:Inter,sans-serif;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+body {
+  background:var(--bg-main);
+  color:var(--text-main);
+  min-height:100vh;
+  padding-top:78px;
+  transition:background .3s,color .3s;
+}
+
+button,input,select {font:inherit}
+
+::-webkit-scrollbar {width:6px}
+::-webkit-scrollbar-thumb {
+  background:var(--scrollbar);
+  border-radius:20px;
+}
+
+/* BACKGROUND */
+
+#particles-js {
+  position:fixed;
+  inset:0;
+  z-index:-3;
+  background:
+    radial-gradient(ellipse at 50% 0%,#17243b 0%,#090b10 70%);
+  transition:background .3s;
+}
+
+body.light-mode #particles-js {
+  background:radial-gradient(ellipse at 50% 0%,#dbeafe,#edf2f8 75%);
+}
+
+.ambient {
+  position:fixed;
+  width:380px;
+  height:380px;
+  border-radius:50%;
+  filter:blur(120px);
+  opacity:.15;
+  pointer-events:none;
+  z-index:-2;
+  background:var(--accent);
+  top:180px;
+  left:-180px;
+}
+
+.ambient.two {
+  background:var(--accent2);
+  left:auto;
+  right:-180px;
+  top:450px;
+}
+
+/* TOP BAR */
+
+.top-bar {
+  position:fixed;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:calc(100% - 24px);
+  max-width:1250px;
+  min-height:52px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:7px 12px;
+  background:var(--glass-bg);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border:1px solid var(--glass-border);
+  border-radius:15px;
+  box-shadow:0 12px 35px rgba(0,0,0,.3);
+  z-index:9999;
+  gap:8px;
+}
+
+.top-left,.top-center,.top-right {
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+.top-center {
+  color:var(--text-muted);
+  font-size:12px;
+  padding:6px 12px;
+  background:var(--card-bg);
+  border:1px solid var(--glass-border);
+  border-radius:30px;
+  white-space:nowrap;
+}
+
+.btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:35px;
+  min-width:35px;
+  padding:0 10px;
+  border-radius:9px;
+  background:var(--card-bg);
+  border:1px solid var(--glass-border);
+  color:var(--text-main);
+  cursor:pointer;
+  text-decoration:none;
+  font-size:14px;
+  transition:all .2s ease;
+  white-space:nowrap;
+}
+
+.btn:hover {
+  transform:translateY(-2px);
+  color:var(--accent);
+  border-color:var(--accent);
+  background:var(--card-hover);
+  box-shadow:0 4px 18px var(--glow);
+}
+
+.btn.active {
+  color:var(--accent);
+  border-color:var(--accent);
+  background:var(--card-hover);
+  box-shadow:0 0 15px var(--glow);
+}
+
+#secret-button {
+  color:transparent;
+  text-decoration:none;
+  font-size:10px;
+  cursor:default;
+}
+
+/* MAIN */
+
+.page-wrap {
+  display:flex;
+  justify-content:center;
+  padding:25px 16px 50px;
+}
+
+.content-wrapper {
+  width:100%;
+  max-width:900px;
+  text-align:center;
+  position:relative;
+}
+
+.hero-header {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  margin-bottom:25px;
+}
+
+.hero-logo {
+  height:85px;
+  max-width:90%;
+  object-fit:contain;
+  filter:drop-shadow(0 0 18px var(--glow));
+  transition:transform .3s;
+}
+
+.hero-logo:hover {transform:scale(1.06)}
+
+h1 {
+  font-family:Orbitron,sans-serif;
+  font-size:34px;
+  margin:10px 0 5px;
+  letter-spacing:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  background-clip:text;
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+.subtitle {
+  color:var(--text-muted);
+  font-size:13px;
+  margin-top:5px;
+}
+
+#randomAbove {
+  margin:12px 0;
+  color:var(--text-muted);
+  font-size:13px;
+}
+
+/* SEARCH */
+
+.search-box {
+  position:relative;
+  margin:0 auto 16px;
+  width:100%;
+}
+
+.search-icon {
+  position:absolute;
+  left:17px;
+  top:50%;
+  transform:translateY(-50%);
+  color:var(--text-muted);
+  font-size:19px;
+  pointer-events:none;
+}
+
+#searchInput {
+  width:100%;
+  padding:15px 18px 15px 48px;
+  border-radius:13px;
+  border:1px solid var(--glass-border);
+  background:var(--glass-bg);
+  backdrop-filter:blur(14px);
+  color:var(--text-main);
+  font-size:15px;
+  outline:none;
+  box-shadow:0 8px 25px rgba(0,0,0,.2);
+  transition:.2s;
+}
+
+#searchInput::placeholder {color:var(--text-muted)}
+
+#searchInput:focus {
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--glow);
+}
+
+/* GAME GRID */
+
+.game-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:8px 3px 12px;
+  font-size:13px;
+  color:var(--text-muted);
+}
+
+#gamesContainer {
+  width:100%;
+  max-height:590px;
+  overflow-y:auto;
+  padding:13px;
+  border-radius:17px;
+  border:1px solid var(--glass-border);
+  background:var(--glass-bg);
+  backdrop-filter:blur(16px);
+  box-shadow:0 18px 45px rgba(0,0,0,.3);
+}
+
+#gamesList {
+  list-style:none;
+  padding:0;
+  margin:0;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:11px;
+}
+
+#gamesList li {
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  overflow:hidden;
+  border:1px solid var(--glass-border);
+  border-radius:12px;
+  background:var(--card-bg);
+  transition:all .2s ease;
+}
+
+#gamesList li:hover {
+  transform:translateY(-3px);
+  border-color:var(--accent);
+  background:var(--card-hover);
+  box-shadow:0 6px 20px rgba(0,0,0,.3),0 0 12px var(--glow);
+}
+
+#gamesList li a {
+  flex:1;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  text-align:left;
+  text-decoration:none;
+  color:var(--text-main);
+  font-size:13px;
+  font-weight:600;
+}
+
+#gamesList li a span {
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.game-icon {
+  width:39px;
+  height:39px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:9px;
+  font-family:Orbitron,sans-serif;
+  font-size:12px;
+  font-weight:800;
+  color:white;
+  background:linear-gradient(135deg,#0891b2,#7c3aed);
+  box-shadow:inset 0 0 12px rgba(255,255,255,.12);
+}
+
+#gamesList li:nth-child(3n+1) .game-icon {
+  background:linear-gradient(135deg,#0e7490,#2563eb);
+}
+#gamesList li:nth-child(3n+2) .game-icon {
+  background:linear-gradient(135deg,#7c3aed,#db2777);
+}
+#gamesList li:nth-child(3n) .game-icon {
+  background:linear-gradient(135deg,#059669,#0e7490);
+}
+
+.star {
+  flex-shrink:0;
+  padding:10px;
+  color:var(--text-muted);
+  cursor:pointer;
+  font-size:19px;
+  transition:.2s;
+  user-select:none;
+}
+
+.star:hover {
+  transform:scale(1.25);
+  color:#facc15;
+}
+
+.star.favorited {
+  color:#facc15;
+  text-shadow:0 0 10px rgba(250,204,21,.6);
+}
+
+#emptyMessage {
+  display:none;
+  padding:30px;
+  color:var(--text-muted);
+  font-size:14px;
+}
+
+#randomText {
+  margin-top:14px;
+  padding:12px;
+  background:var(--card-bg);
+  border:1px solid var(--glass-border);
+  border-radius:11px;
+  color:var(--text-muted);
+  font-size:13px;
+}
+
+#gameCount {
+  color:var(--accent);
+  font-weight:700;
+}
+
+/* SETTINGS */
+
+.modal-overlay {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(5px);
+  z-index:9998;
+  display:none;
+}
+
+.modal-overlay.show {display:block}
+
+.settings-modal {
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) scale(.94);
+  width:min(370px,calc(100% - 30px));
+  padding:25px;
+  display:none;
+  flex-direction:column;
+  gap:14px;
+  background:var(--glass-bg);
+  color:var(--text-main);
+  border:1px solid var(--accent);
+  border-radius:17px;
+  box-shadow:0 25px 70px rgba(0,0,0,.6),0 0 25px var(--glow);
+  backdrop-filter:blur(20px);
+  z-index:10000;
+}
+
+.settings-modal.show {
+  display:flex;
+  transform:translate(-50%,-50%) scale(1);
+}
+
+.settings-modal h2 {
+  font-family:Orbitron,sans-serif;
+  font-size:19px;
+  margin:0 0 5px;
+  color:var(--accent);
+}
+
+.settings-modal label {
+  font-size:12px;
+  color:var(--text-muted);
+  font-weight:700;
+  text-align:left;
+}
+
+.settings-input {
+  width:100%;
+  padding:11px;
+  border:1px solid var(--glass-border);
+  border-radius:9px;
+  background:var(--card-bg);
+  color:var(--text-main);
+  outline:none;
+}
+
+.settings-input:focus {border-color:var(--accent)}
+
+.settings-input option {
+  color:#111;
+  background:#fff;
+}
+
+#closeSettingsBtn {
+  position:absolute;
+  right:15px;
+  top:12px;
+  border:0;
+  background:none;
+  color:var(--text-main);
+  font-size:23px;
+  cursor:pointer;
+}
+
+.settings-note {
+  color:var(--text-muted);
+  font-size:11px;
+  text-align:left;
+}
+
+/* CURSOR */
+
+.cursor-dot {
+  position:fixed;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 12px var(--accent);
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+  z-index:10002;
+}
+
+.cursor {
+  position:fixed;
+  width:27px;
+  height:27px;
+  border:1px solid var(--accent);
+  background:rgba(0,240,255,.07);
+  border-radius:50%;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+  z-index:10001;
+  transition:width .18s,height .18s,background .18s;
+}
+
+.cursor.hovering {
+  width:42px;
+  height:42px;
+  background:rgba(0,240,255,.14);
+  border-color:var(--accent2);
+}
+
+@media(max-width:850px) {
+  #gamesList {grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media(max-width:650px) {
+  body {padding-top:65px;cursor:auto}
+  .top-bar {
+    top:5px;
+    width:calc(100% - 10px);
+    min-height:46px;
+    padding:5px;
+    gap:3px;
+  }
+  .top-left,.top-right {gap:4px}
+  .top-center {display:none}
+  .btn {min-width:30px;height:32px;padding:0 7px;font-size:12px}
+  #welcomeMessage {display:none}
+  .page-wrap {padding:22px 10px 35px}
+  h1 {font-size:27px}
+  .hero-logo {height:70px}
+  #gamesList {grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  #gamesContainer {padding:8px;max-height:65vh}
+  #gamesList li a {padding:8px;gap:7px;font-size:11px}
+  .game-icon {width:34px;height:34px;font-size:10px}
+  .star {padding:7px;font-size:16px}
+  .cursor,.cursor-dot {display:none}
+}
+
+@media(max-width:370px) {
+  .top-bar {overflow-x:auto}
+  #gamesList {grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<div id="particles-js"></div>
+<div class="ambient"></div>
+<div class="ambient two"></div>
+
+<!-- NAVIGATION -->
+<div class="top-bar">
+
+  <div class="top-left">
+    <a href="menu.html" class="btn" id="menuBtn" title="Menu">▦</a>
+    <span id="welcomeMessage"></span>
+
+    <button class="btn" id="settingsBtn" title="Settings">⚙</button>
+
+    <a href="chat.html" class="btn" id="chatBtn" title="Chat">🗨</a>
+
+    <a href="admin.html" class="btn" id="adminBtn" title="Admin">🔒</a>
+
+    <a href="ytu.html" class="btn" id="YouTubeUnblockerBtn" title="YouTube Unblocker">▶</a>
+  </div>
+
+  <div class="top-center">
+    <span id="dateTime"></span>
+    <script src="https://counter.websiteout.com/js/2/5/1200/0"></script>
+    <a id="secret-button" href="realadmin.html">Visitors</a>
+  </div>
+
+  <div class="top-right">
+    <button class="btn" id="favBtn" title="Favorites">⭐</button>
+    <button class="btn" id="recentsBtn" title="Recently Played">↻</button>
+    <button class="btn" id="bgToggleBtn" title="Change Background">🎨</button>
+    <button class="btn" id="musicToggleBtn" title="Music">♫</button>
+    <button class="btn" id="modeToggle" title="Light/Dark Mode">☀</button>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="page-wrap">
+<div class="content-wrapper">
+
+  <div class="hero-header">
+    <img src="logo-christmas.png" class="hero-logo" alt="Site Logo"
+         onerror="this.style.display='none'">
+
+    <h1 id="siteTitle">CANVAS</h1>
+    <div class="subtitle">YOUR NEXT FAVORITE GAME IS HERE.</div>
+  </div>
+
+  <div id="randomAbove"></div>
+
+  <div class="search-box">
+    <span class="search-icon">⌕</span>
+    <input id="searchInput" type="text"
+      placeholder="Search games...">
+  </div>
+
+  <div class="game-heading">
+    <span id="filterTitle">ALL GAMES</span>
+    <span><span id="gameCount">0</span> GAMES</span>
+  </div>
+
+  <div id="gamesContainer">
+    <ul id="gamesList"></ul>
+    <div id="emptyMessage">No games found. Try another search!</div>
+  </div>
+
+  <div id="randomText"></div>
+
+</div>
+</div>
+
+<!-- SETTINGS -->
+<div class="modal-overlay" id="modalOverlay"></div>
+
+<div class="settings-modal" id="settingsModal">
+  <button id="closeSettingsBtn" aria-label="Close">&times;</button>
+
+  <h2>SETTINGS</h2>
+
+  <label for="tabPreset">TAB CLOAK PRESET</label>
+  <select id="tabPreset" class="settings-input">
+    <option value="canvas">Canvas</option>
+    <option value="google">Google</option>
+    <option value="drive">Google Drive</option>
+    <option value="classroom">Google Classroom</option>
+    <option value="newtab">New Tab</option>
+    <option value="custom">Custom URL...</option>
+  </select>
+
+  <input id="customIconUrl" class="settings-input"
+    placeholder="Custom icon image URL" style="display:none">
+
+  <input id="customTabTitle" class="settings-input"
+    placeholder="Custom tab title (optional)">
+
+  <button class="btn" id="applyTabBtn">Apply Tab Logo</button>
+
+  <div class="settings-note">
+    Your tab title and favicon preferences are saved on this device.
+  </div>
+</div>
+
+<div id="musicPlayer" style="display:none"></div>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+<script>
+/* GAME DATABASE */
+
+const games = [
+["1v1.lol","1v1lol.html"],
+["2048","2048.html"],
+["A Small World Cup","aswc.html"],
+["Age Of War","ageofwar.html"],
+["Amazing Strange Rope Police","asrp.html"],
+["Among Us","amongus.html"],
+["Awesome Tanks 2","awesometanks2.html"],
+["Bacon May Die","baconmaydie.html"],
+["Basket Random","basketrandom.html"],
+["Bit Planes","bitplanes.html"],
+["Bitlife","bitlife.html"],
+["Bit Gun.io","bitgun-io.html"],
+["Block Blast","blockblast.html"],
+["Bloons TD","bloonstd.html"],
+["Boxing Random","boxingrandom.html"],
+["Baseball Bros.","baseballbros.html"],
+["Clicker Hero","clickerhero.html"],
+["COD Zombies","cod-zombies.html"],
+["Cluster Rush","clusterrush.html"],
+["Cookie Clicker","cookieclicker.html"],
+["Crossyroad","crossyroad.html"],
+["Chrome Dino","chromedino.html"],
+["Drive Mad","drivemad.html"],
+["Drift Boss","driftboss.html"],
+["Drift Hunters","drift-hunters.html"],
+["Duck Life","ducklife.html"],
+["Five Nights at Freddy's","fnaf.html"],
+["Five Nights at Freddy's 2","fnaf2.html"],
+["Funny Shooter 2","funnyshooter2.html"],
+["Football Bros.","footballbros.html"],
+["Geometry Dash","geometrydash.html"],
+["Get Away Shootout","getawayshootout.html"],
+["Granny","granny.html"],
+["Gun Spin","gunspin.html"],
+["Hole.io","hole-io.html"],
+["Hextris","hextris.html"],
+["JavaScript Roulette","js.html"],
+["Learn to Fly","learntofly.html"],
+["Learn to Fly 2","learntofly2.html"],
+["Learn to Fly 3","learntofly3.html"],
+["MotoX3M","motox3m.html"],
+["Monkey Mart","monkeymart.html"],
+["Minecraft","minecraft-menu.html"],
+["OvO","ovo.html"],
+["Oregon Trail","oregontrail.html"],
+["Paper.io 2","paper.io2.html"],
+["Poly Track","polytrack.html"],
+["Ragdoll Archers","ragdollarchers.html"],
+["Ragdoll Hit","ragdollhit.html"],
+["Retro Bowl","retrobowl.html"],
+["Real Flight Simulator","realfs.html"],
+["Retro Bowl College","retrobowlcollege.html"],
+["Rooftop Snipers","rooftopsnipers.html"],
+["Subway Surfers","subwaysurfers.html"],
+["Slope","slope.html"],
+["Stick Man Hook","stickmanhook.html"],
+["Snow Rider 3D","snowrider3d.html"],
+["Snake.io","snake-io.html"],
+["SUPERHOT","superhot.html"],
+["Steal A Brainrot","sab.html"],
+["Soccer Bros.","soccerbros.html"],
+["Time Shooter 2","timeshooter2.html"],
+["Time Shooter 3","timeshooter3.html"],
+["Tomb Of The Mask","totm.html"],
+["Tetris","tetris.html"],
+["We Become What We Behold","wbwwb.html"],
+["Whack Your Boss","whackyourboss.html"],
+["Wheelie Bike","wheeliebike.html"],
+["Yohoho.io","yohoho-io.html"]
+];
+
+/* GAME RENDERING */
+
+const gamesList = document.getElementById("gamesList");
+const searchInput = document.getElementById("searchInput");
+const gameCount = document.getElementById("gameCount");
+const emptyMessage = document.getElementById("emptyMessage");
+
+let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+let recents = JSON.parse(localStorage.getItem("recents") || "[]");
+
+let currentFilter = "all";
+
+function initials(name) {
+  return name.split(/\s+/).slice(0,2).map(w=>w[0]).join("").toUpperCase();
+}
+
+function renderGames() {
+  gamesList.innerHTML = "";
+
+  const search = searchInput.value.toLowerCase().trim();
+
+  const filtered = games.filter(game => {
+    const name = game[0];
+    const matchesSearch = name.toLowerCase().includes(search);
+
+    const matchesFilter =
+      currentFilter === "all" ||
+      (currentFilter === "favorites" && favorites.includes(name)) ||
+      (currentFilter === "recents" && recents.includes(name));
+
+    return matchesSearch && matchesFilter;
+  });
+
+  filtered.forEach(game => {
+    const name = game[0];
+    const href = game[1];
+
+    const li = document.createElement("li");
+
+    const link = document.createElement("a");
+    link.href = href;
+    link.title = name;
+
+    const icon = document.createElement("div");
+    icon.className = "game-icon";
+    icon.textContent = initials(name);
+
+    const label = document.createElement("span");
+    label.textContent = name;
+
+    link.append(icon,label);
+
+    link.addEventListener("click", () => {
+      recents = recents.filter(item => item !== name);
+      recents.unshift(name);
+      recents = recents.slice(0,20);
+      localStorage.setItem("recents",JSON.stringify(recents));
+    });
+
+    const star = document.createElement("span");
+    star.className = "star";
+    star.textContent = "★";
+    star.title = "Add to favorites";
+
+    if (favorites.includes(name)) star.classList.add("favorited");
+
+    star.addEventListener("click", () => {
+      if (favorites.includes(name)) {
+        favorites = favorites.filter(item => item !== name);
+      } else {
+        favorites.push(name);
+      }
+
+      localStorage.setItem("favorites",JSON.stringify(favorites));
+      renderGames();
+    });
+
+    li.append(link,star);
+    gamesList.appendChild(li);
+  });
+
+  gameCount.textContent = filtered.length;
+  emptyMessage.style.display = filtered.length ? "none" : "block";
+
+  document.getElementById("filterTitle").textContent =
+    currentFilter === "favorites" ? "YOUR FAVORITES" :
+    currentFilter === "recents" ? "RECENTLY PLAYED" :
+    search ? "SEARCH RESULTS" : "ALL GAMES";
+}
+
+searchInput.addEventListener("input",renderGames);
+
+/* FAVORITES */
+
+const favBtn = document.getElementById("favBtn");
+
+favBtn.addEventListener("click",() => {
+  currentFilter = currentFilter === "favorites" ? "all" : "favorites";
+
+  favBtn.classList.toggle("active",currentFilter === "favorites");
+  recentsBtn.classList.remove("active");
+
+  renderGames();
+});
+
+/* RECENTS */
+
+const recentsBtn = document.getElementById("recentsBtn");
+
+recentsBtn.addEventListener("click",() => {
+  currentFilter = currentFilter === "recents" ? "all" : "recents";
+
+  recentsBtn.classList.toggle("active",currentFilter === "recents");
+  favBtn.classList.remove("active");
+
+  renderGames();
+});
+
+/* CLOCK */
+
+function updateTime() {
+  document.getElementById("dateTime").textContent =
+    new Date().toLocaleString();
+}
+
+updateTime();
+setInterval(updateTime,1000);
+
+/* THEME */
+
+const modeToggle = document.getElementById("modeToggle");
+
+if (localStorage.getItem("lightMode") === "true") {
+  document.body.classList.add("light-mode");
+}
+
+function updateModeIcon() {
+  modeToggle.textContent =
+    document.body.classList.contains("light-mode") ? "☾" : "☀";
+}
+
+updateModeIcon();
+
+modeToggle.addEventListener("click",() => {
+  document.body.classList.toggle("light-mode");
+
+  localStorage.setItem(
+    "lightMode",
+    document.body.classList.contains("light-mode")
+  );
+
+  updateModeIcon();
+});
+
+/* RANDOM TEXT */
+
+const texts = [
+  "gotta glock in my 'rari",
+  "m&m's, sweet like candy cane",
+  "pst. i see dead people",
+  "not afraid to take a stand",
+  "ay, mustard on the beat, h0",
+  "teacher panic key is q, do ctrl+d to bookmark",
+  "welcome to the game zone.",
+  "loading fun... complete.",
+  "one more game can't hurt.",
+  "your next high score starts here."
+];
+
+document.getElementById("randomText").textContent =
+  texts[Math.floor(Math.random()*texts.length)];
+
+/* SETTINGS MODAL */
+
+const settingsModal = document.getElementById("settingsModal");
+const overlay = document.getElementById("modalOverlay");
+
+function openSettings() {
+  settingsModal.classList.add("show");
+  overlay.classList.add("show");
+}
+
+function closeSettings() {
+  settingsModal.classList.remove("show");
+  overlay.classList.remove("show");
+}
+
+document.getElementById("settingsBtn").addEventListener("click",openSettings);
+document.getElementById("closeSettingsBtn").addEventListener("click",closeSettings);
+overlay.addEventListener("click",closeSettings);
+
+document.addEventListener("keydown",e => {
+  if (e.key === "Escape") closeSettings();
+
+  if (e.key.toLowerCase() === "q" &&
+      !["INPUT","TEXTAREA","SELECT"].includes(document.activeElement.tagName)) {
+    window.location.href = "https://canvas.nebo.edu/";
+  }
+});
+
+/* TAB CLOAK */
+
+const presets = {
+  canvas:{
+    title:"Canvas",
+    icon:"https://www.wabash.edu/images2/technology/canvas.png"
+  },
+  google:{
+    title:"Google",
+    icon:"googlelogo.png"
+  },
+  drive:{
+    title:"Home - Google Drive",
+    icon:"googledrivelogo.png"
+  },
+  classroom:{
+    title:"Home",
+    icon:"google-classroom.png"
+  },
+  newtab:{
+    title:"New Tab",
+    icon:"newtablogo.png"
+  }
+};
+
+const presetSelect = document.getElementById("tabPreset");
+const customIcon = document.getElementById("customIconUrl");
+const customTitle = document.getElementById("customTabTitle");
+
+presetSelect.addEventListener("change",() => {
+  customIcon.style.display =
+    presetSelect.value === "custom" ? "block" : "none";
+});
+
+function setTabCloak(title,icon) {
+  if (title) {
+    document.title = title;
+    localStorage.setItem("savedTabTitle",title);
+  }
+
+  if (icon) {
+    document.getElementById("favicon").href = icon;
+    localStorage.setItem("savedTabIcon",icon);
+  }
+}
+
+document.getElementById("applyTabBtn").addEventListener("click",() => {
+  const choice = presetSelect.value;
+  let title = customTitle.value.trim();
+  let icon = "";
+
+  if (choice === "custom") {
+    icon = customIcon.value.trim();
+
+    if (!icon) {
+      alert("Please enter an image URL.");
+      return;
+    }
+
+    title = title || "Canvas";
+  } else {
+    title = title || presets[choice].title;
+    icon = presets[choice].icon;
+  }
+
+  setTabCloak(title,icon);
+  closeSettings();
+});
+
+const savedTitle = localStorage.getItem("savedTabTitle");
+const savedIcon = localStorage.getItem("savedTabIcon");
+
+if (savedTitle || savedIcon) {
+  setTabCloak(savedTitle,savedIcon);
+}
+
+/* BACKGROUND SWITCHER */
+
+const backgrounds = [
+  "particles",
+  "images/background/bg1.jpg",
+  "images/background/bg2.jpg"
+];
+
+const particlesDiv = document.getElementById("particles-js");
+
+let currentBg = localStorage.getItem("currentBg") || "particles";
+
+if (!backgrounds.includes(currentBg)) currentBg = "particles";
+
+function setBackground(bg) {
+  if (window.pJSDom && window.pJSDom.length) {
+    window.pJSDom.forEach(instance => {
+      try { instance.pJS.fn.vendors.destroypJS(); } catch(e) {}
+    });
+    window.pJSDom = [];
+  }
+
+  if (bg === "particles") {
+    particlesDiv.innerHTML = "";
+    particlesDiv.style.background = "";
+
+    if (window.particlesJS) {
+      particlesJS.load(
+        "particles-js",
+        "https://cdn.jsdelivr.net/gh/VincentGarreau/particles.js/demo/particles.json"
+      );
+    }
+  } else {
+    particlesDiv.innerHTML = "";
+    particlesDiv.style.background =
+      `url("${bg}") center/cover no-repeat`;
+  }
+
+  currentBg = bg;
+  localStorage.setItem("currentBg",bg);
+}
+
+setBackground(currentBg);
+
+document.getElementById("bgToggleBtn").addEventListener("click",() => {
+  let index = backgrounds.indexOf(currentBg);
+  index = (index+1)%backgrounds.length;
+  setBackground(backgrounds[index]);
+});
+
+/* YOUTUBE MUSIC */
+
+let musicPlayer;
+let musicIsPlaying = false;
+let youtubeReady = false;
+
+const musicBtn = document.getElementById("musicToggleBtn");
+
+function onYouTubeIframeAPIReady() {
+  musicPlayer = new YT.Player("musicPlayer",{
+    height:"0",
+    width:"0",
+    videoId:"V48HXBP41vs",
+    playerVars:{
+      autoplay:0,
+      controls:0,
+      loop:1,
+      playlist:"V48HXBP41vs"
+    },
+    events:{
+      onReady:function() {
+        youtubeReady = true;
+      }
+    }
+  });
+}
+
+const ytScript = document.createElement("script");
+ytScript.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(ytScript);
+
+musicBtn.addEventListener("click",() => {
+  if (!youtubeReady || !musicPlayer) {
+    musicBtn.title = "Music player is loading. Try again shortly.";
+    return;
+  }
+
+  if (!musicIsPlaying) {
+    musicPlayer.playVideo();
+    musicBtn.classList.add("active");
+    musicIsPlaying = true;
+  } else {
+    musicPlayer.pauseVideo();
+    musicBtn.classList.remove("active");
+    musicIsPlaying = false;
+  }
+});
+
+/* CUSTOM CURSOR */
+
+const cursor = document.getElementById("cursor");
+const cursorDot = document.getElementById("cursorDot");
+
+document.addEventListener("mousemove",e => {
+  cursor.style.left = e.clientX+"px";
+  cursor.style.top = e.clientY+"px";
+
+  cursorDot.style.left = e.clientX+"px";
+  cursorDot.style.top = e.clientY+"px";
+});
+
+document.addEventListener("mouseover",e => {
+  if (e.target.closest("a,button,.star")) {
+    cursor.classList.add("hovering");
+  }
+});
+
+document.addEventListener("mouseout",e => {
+  if (e.target.closest("a,button,.star")) {
+    cursor.classList.remove("hovering");
+  }
+});
+
+/* ACTIVE MENU BUTTON */
+
+if (window.location.pathname.endsWith("menu.html")) {
+  document.getElementById("menuBtn").classList.add("active");
+}
+
+/* INITIALIZE */
+
+renderGames();
+
+</script>
+</body>
+</html>
