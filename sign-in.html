@@ -2,89 +2,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Canvas - Login</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canvas - Login</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    * { box-sizing: border-box; }
+<style>
+* { box-sizing: border-box; }
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
+body {
+  font-family: Arial, sans-serif;
+  background: #121212;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+}
 
-    .container {
-      max-width: 450px;
-      width: 100%;
-      background: #1e1e1e;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,.3);
-    }
+.container {
+  max-width: 700px;
+  width: 100%;
+  background: #1e1e1e;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,.3);
+}
 
-    h1, #accountInfo { text-align: center; }
+h1, h2 { text-align: center; }
 
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0;
-      border-radius: 8px;
-      border: 1px solid #333;
-      background: #222;
-      color: white;
-      font-size: 16px;
-    }
+input, button {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #222;
+  color: white;
+  font-size: 16px;
+}
 
-    button {
-      background: #007bff;
-      border: none;
-      cursor: pointer;
-    }
+button {
+  background: #007bff;
+  border: none;
+  cursor: pointer;
+}
 
-    button:hover { background: #0056b3; }
-    button:disabled { opacity: .6; cursor: wait; }
+button:hover { background: #0056b3; }
+button:disabled { opacity: .6; cursor: wait; }
 
-    #homeBtn { background: #444; }
-    #logoutBtn { background: #dc3545; }
+#homeBtn { background: #444; }
+#adminBtn { background: #8b5cf6; }
+#logoutBtn { background: #dc3545; }
+#refreshBtn { background: #198754; }
 
-    #notification {
-      position: fixed;
-      top: -100px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #28a745;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      transition: top .4s ease;
-      z-index: 1000;
-      max-width: 90%;
-      text-align: center;
-    }
+#adminPanel, #accountInfo {
+  display: none;
+}
 
-    #accountInfo { display: none; }
+#adminPanel {
+  margin-top: 20px;
+  background: #292929;
+  padding: 15px;
+  border-radius: 10px;
+}
 
-    .switch {
-      text-align: center;
-      margin-top: 15px;
-      color: #aaa;
-    }
+#accountInfo {
+  text-align: center;
+}
 
-    .switch span {
-      color: #007bff;
-      cursor: pointer;
-    }
-  </style>
+.switch {
+  text-align: center;
+  color: #aaa;
+  margin: 15px 0;
+}
+
+.switch span {
+  color: #2196f3;
+  cursor: pointer;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.controls input { flex: 1; min-width: 0; }
+.controls button { width: auto; }
+
+.feedback-item {
+  border-bottom: 1px solid #444;
+  padding: 12px 0;
+  overflow-wrap: anywhere;
+}
+
+.feedback-item:last-child { border-bottom: none; }
+
+.feedback-item small {
+  color: #aaa;
+}
+
+#notification {
+  position: fixed;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #28a745;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  transition: top .4s ease;
+  z-index: 1000;
+  max-width: 90%;
+  text-align: center;
+}
+</style>
 </head>
 
 <body>
@@ -107,7 +143,6 @@
       type="password"
       id="password"
       placeholder="Password"
-      autocomplete="current-password"
       minlength="6"
       required
     >
@@ -121,11 +156,45 @@
     <span id="switchBtn">Sign Up</span>
   </div>
 
+  <button type="button" id="adminBtn">
+    Admin Login
+  </button>
+
   <div id="accountInfo">
     <h2>Welcome!</h2>
     <p id="userEmail"></p>
-    <button type="button" id="logoutBtn">Logout</button>
   </div>
+
+  <div id="adminPanel">
+
+    <h2>Admin Dashboard</h2>
+    <p style="text-align:center;color:#aaa;">
+      All Feedback Responses
+    </p>
+
+    <div class="controls">
+      <input
+        type="text"
+        id="search"
+        placeholder="Search feedback..."
+      >
+
+      <button type="button" id="refreshBtn">
+        Refresh
+      </button>
+    </div>
+
+    <p id="feedbackCount">Loading...</p>
+
+    <div id="feedbackList">
+      Loading feedback...
+    </div>
+
+  </div>
+
+  <button type="button" id="logoutBtn" style="display:none;">
+    Logout
+  </button>
 
   <button type="button" id="homeBtn"
     onclick="window.location.href='index.html'">
@@ -137,67 +206,99 @@
 <div id="notification"></div>
 
 <script>
-  // SUPABASE SETTINGS
 
-  const SUPABASE_URL =
-    "https://wqnwdjhehbpekvwjadxr.supabase.co";
+// ====================================
+// SUPABASE CONFIGURATION
+// ====================================
 
-  const SUPABASE_KEY =
-    "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE";
+const SUPABASE_URL =
+  "https://wqnwdjhehbpekvwjadxr.supabase.co";
 
-  // INITIALIZE SUPABASE
+const SUPABASE_KEY =
+  "YOUR_SUPABASE_PUBLISHABLE_KEY";
 
-  const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
-  // ELEMENTS
+// ====================================
+// ELEMENTS
+// ====================================
 
-  const authForm = document.getElementById("authForm");
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
-  const heading = document.getElementById("heading");
-  const submitBtn = document.getElementById("submitBtn");
-  const switchText = document.getElementById("switchText");
-  const accountInfo = document.getElementById("accountInfo");
-  const userEmail = document.getElementById("userEmail");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const notification = document.getElementById("notification");
+const authForm = document.getElementById("authForm");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
 
-  let isSignUp = false;
-  let notificationTimer;
+const heading = document.getElementById("heading");
+const submitBtn = document.getElementById("submitBtn");
+const switchText = document.getElementById("switchText");
 
-  // NOTIFICATIONS
+const adminBtn = document.getElementById("adminBtn");
+const adminPanel = document.getElementById("adminPanel");
 
-  function showNotification(message, success = true) {
-    notification.textContent = message;
-    notification.style.background =
-      success ? "#28a745" : "#dc3545";
+const accountInfo = document.getElementById("accountInfo");
+const userEmail = document.getElementById("userEmail");
 
-    notification.style.top = "20px";
+const logoutBtn = document.getElementById("logoutBtn");
 
-    clearTimeout(notificationTimer);
+const feedbackList = document.getElementById("feedbackList");
+const feedbackCount = document.getElementById("feedbackCount");
+const searchInput = document.getElementById("search");
+const refreshBtn = document.getElementById("refreshBtn");
 
-    notificationTimer = setTimeout(() => {
-      notification.style.top = "-100px";
-    }, 4000);
-  }
+const notification = document.getElementById("notification");
 
-  // LOGIN / SIGNUP SWITCH
+let isSignUp = false;
+let isAdminLogin = false;
+let notificationTimer;
 
-  function updateMode() {
-    heading.textContent = isSignUp ? "Sign Up" : "Login";
+// ====================================
+// NOTIFICATIONS
+// ====================================
 
-    submitBtn.textContent =
-      isSignUp ? "Create Account" : "Login";
+function showNotification(message, success = true) {
+  notification.textContent = message;
+  notification.style.background =
+    success ? "#28a745" : "#dc3545";
 
-    passwordInput.autocomplete =
-      isSignUp ? "new-password" : "current-password";
+  notification.style.top = "20px";
 
-    switchText.textContent = isSignUp
-      ? "Already have an account? "
-      : "Don't have an account? ";
+  clearTimeout(notificationTimer);
+
+  notificationTimer = setTimeout(() => {
+    notification.style.top = "-100px";
+  }, 4000);
+}
+
+// ====================================
+// LOGIN / SIGNUP MODE
+// ====================================
+
+function updateMode() {
+
+  heading.textContent = isAdminLogin
+    ? "Admin Login"
+    : isSignUp ? "Sign Up" : "Login";
+
+  submitBtn.textContent = isAdminLogin
+    ? "Admin Sign In"
+    : isSignUp ? "Create Account" : "Login";
+
+  switchText.style.display =
+    isAdminLogin ? "none" : "block";
+
+  switchText.replaceChildren();
+
+  if (!isAdminLogin) {
+
+    switchText.append(
+      document.createTextNode(
+        isSignUp
+          ? "Already have an account? "
+          : "Don't have an account? "
+      )
+    );
 
     const link = document.createElement("span");
 
@@ -211,145 +312,330 @@
     switchText.appendChild(link);
   }
 
+  adminBtn.textContent = isAdminLogin
+    ? "Back to User Login"
+    : "Admin Login";
+}
+
+// ====================================
+// ADMIN MODE BUTTON
+// ====================================
+
+adminBtn.addEventListener("click", () => {
+
+  isAdminLogin = !isAdminLogin;
+  isSignUp = false;
+
   updateMode();
 
-  // AUTHENTICATION
+});
 
-  authForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
+// ====================================
+// USER INTERFACE
+// ====================================
 
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
+function updateUI(user) {
 
-    if (!email || !password) {
-      showNotification("Please fill in all fields.", false);
-      return;
-    }
+  authForm.style.display = "none";
+  switchText.style.display = "none";
+  adminBtn.style.display = "none";
+  accountInfo.style.display = "none";
+  adminPanel.style.display = "none";
+  logoutBtn.style.display = "block";
 
-    if (password.length < 6) {
-      showNotification("Password must be at least 6 characters.", false);
-      return;
-    }
+  if (!user) {
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Please wait...";
+    authForm.style.display = "block";
+    switchText.style.display = "block";
+    adminBtn.style.display = "block";
+    logoutBtn.style.display = "none";
 
-    try {
-      if (isSignUp) {
+    isAdminLogin = false;
+    isSignUp = false;
 
-        const { data, error } =
-          await supabaseClient.auth.signUp({
-            email,
-            password
-          });
+    updateMode();
+    return;
+  }
 
-        if (error) throw error;
+  const isAdmin =
+    user.app_metadata?.role === "admin";
 
-        if (data.session) {
-          showNotification("Account created successfully!");
-        } else {
+  if (isAdmin) {
+
+    heading.textContent = "Admin Dashboard";
+    adminPanel.style.display = "block";
+    loadFeedback(searchInput.value);
+
+  } else {
+
+    heading.textContent = "Account";
+    accountInfo.style.display = "block";
+    userEmail.textContent = user.email || "";
+
+  }
+}
+
+// ====================================
+// LOGIN / SIGNUP
+// ====================================
+
+authForm.addEventListener("submit", async (e) => {
+
+  e.preventDefault();
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Please wait...";
+
+  try {
+
+    if (isSignUp) {
+
+      const { data, error } =
+        await supabaseClient.auth.signUp({
+          email,
+          password
+        });
+
+      if (error) throw error;
+
+      if (data.session) {
+        showNotification("Account created successfully!");
+      } else {
+        showNotification(
+          "Account created! Check your email to verify it."
+        );
+      }
+
+    } else {
+
+      const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+      if (error) throw error;
+
+      const user = data.user;
+
+      if (isAdminLogin) {
+
+        if (user.app_metadata?.role !== "admin") {
+
+          await supabaseClient.auth.signOut();
+
           showNotification(
-            "Account created! Check your email to verify it."
+            "Access denied. You are not an administrator.",
+            false
           );
+
+          return;
         }
 
+        showNotification("Admin login successful!");
+
       } else {
-
-        const { error } =
-          await supabaseClient.auth.signInWithPassword({
-            email,
-            password
-          });
-
-        if (error) throw error;
 
         showNotification("Login successful!");
 
       }
 
-    } catch (error) {
-      console.error("Authentication error:", error);
+      updateUI(user);
 
-      showNotification(
-        error.message || "Something went wrong. Please try again.",
-        false
-      );
-
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent =
-        isSignUp ? "Create Account" : "Login";
     }
-  });
 
-  // LOGOUT
+  } catch (error) {
 
-  logoutBtn.addEventListener("click", async () => {
-    logoutBtn.disabled = true;
+    console.error("Authentication error:", error);
+    showNotification(error.message, false);
 
-    try {
-      const { error } = await supabaseClient.auth.signOut();
+  } finally {
 
-      if (error) throw error;
+    submitBtn.disabled = false;
+    updateMode();
 
-      showNotification("Logged out successfully!");
-
-    } catch (error) {
-      showNotification(error.message, false);
-
-    } finally {
-      logoutBtn.disabled = false;
-    }
-  });
-
-  // UPDATE PAGE
-
-  function updateUI(user) {
-    if (user) {
-      authForm.style.display = "none";
-      switchText.style.display = "none";
-      accountInfo.style.display = "block";
-
-      userEmail.textContent = user.email || "";
-
-    } else {
-      authForm.style.display = "block";
-      switchText.style.display = "block";
-      accountInfo.style.display = "none";
-    }
   }
 
-  // CHECK LOGIN SESSION
+});
 
-  async function checkSession() {
-    try {
-      const { data, error } =
-        await supabaseClient.auth.getSession();
+// ====================================
+// LOAD ALL FEEDBACK
+// ====================================
 
-      if (error) throw error;
+async function loadFeedback(filter = "") {
 
-      updateUI(data.session?.user || null);
+  feedbackList.textContent = "Loading feedback...";
+  feedbackCount.textContent = "Loading...";
 
-    } catch (error) {
-      console.error("Session error:", error);
-      showNotification(
-        "Could not connect to Supabase. Check your project URL and internet connection.",
-        false
-      );
+  try {
+
+    // Verify the actual authenticated user
+    const { data: authData, error: authError } =
+      await supabaseClient.auth.getUser();
+
+    if (authError) throw authError;
+
+    const user = authData.user;
+
+    if (!user || user.app_metadata?.role !== "admin") {
+      throw new Error("Admin permission required.");
     }
+
+    const { data, error } = await supabaseClient
+      .from("feedback")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    const query = filter.toLowerCase();
+
+    const filtered = (data || []).filter(item =>
+      String(item.name || "").toLowerCase().includes(query) ||
+      String(item.message || "").toLowerCase().includes(query)
+    );
+
+    feedbackCount.textContent =
+      `Showing ${filtered.length} of ${(data || []).length} responses`;
+
+    feedbackList.replaceChildren();
+
+    if (filtered.length === 0) {
+
+      feedbackList.textContent = "No feedback found.";
+      return;
+
+    }
+
+    filtered.forEach(item => {
+
+      const div = document.createElement("div");
+      div.className = "feedback-item";
+
+      const title = document.createElement("strong");
+      title.textContent = item.name || "Anonymous";
+
+      const answer = document.createElement("p");
+      answer.textContent = item.message || "";
+
+      const date = document.createElement("small");
+      date.textContent = item.created_at
+        ? new Date(item.created_at).toLocaleString()
+        : "Date unavailable";
+
+      div.append(title, answer, date);
+      feedbackList.appendChild(div);
+
+    });
+
+  } catch (error) {
+
+    console.error("Feedback error:", error);
+
+    feedbackCount.textContent = "Unable to load responses.";
+
+    feedbackList.textContent = error.message;
+
   }
 
-  // AUTH STATE LISTENER
+}
 
-  supabaseClient.auth.onAuthStateChange(
-    (_event, session) => {
-      updateUI(session?.user || null);
-    }
-  );
+// ====================================
+// SEARCH
+// ====================================
 
-  // START
+searchInput.addEventListener("input", () => {
+  loadFeedback(searchInput.value);
+});
 
-  checkSession();
+// ====================================
+// REFRESH
+// ====================================
+
+refreshBtn.addEventListener("click", async () => {
+
+  refreshBtn.disabled = true;
+
+  await loadFeedback(searchInput.value);
+
+  refreshBtn.disabled = false;
+
+});
+
+// ====================================
+// LOGOUT
+// ====================================
+
+logoutBtn.addEventListener("click", async () => {
+
+  logoutBtn.disabled = true;
+
+  try {
+
+    const { error } = await supabaseClient.auth.signOut();
+
+    if (error) throw error;
+
+    showNotification("Logged out successfully!");
+
+    updateUI(null);
+
+  } catch (error) {
+
+    showNotification(error.message, false);
+
+  } finally {
+
+    logoutBtn.disabled = false;
+
+  }
+
+});
+
+// ====================================
+// RESTORE SESSION
+// ====================================
+
+async function checkSession() {
+
+  try {
+
+    const { data, error } =
+      await supabaseClient.auth.getSession();
+
+    if (error) throw error;
+
+    updateUI(data.session?.user || null);
+
+  } catch (error) {
+
+    console.error(error);
+
+    showNotification(
+      "Could not connect to Supabase. Check your URL and API key.",
+      false
+    );
+
+  }
+
+}
+
+// ====================================
+// AUTH STATE CHANGES
+// ====================================
+
+supabaseClient.auth.onAuthStateChange(
+  (_event, session) => {
+
+    updateUI(session?.user || null);
+
+  }
+);
+
+checkSession();
 
 </script>
 
