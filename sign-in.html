@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Canvas</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -92,45 +91,21 @@
 <body>
   <div class="container">
     <h1>Login / Sign Up</h1>
-
     <form id="feedbackForm">
-      <input
-        type="email"
-        id="name"
-        placeholder="Your Email (sign in with your current account)"
-        autocomplete="email"
-        required
-      >
-
-      <input
-        type="password"
-        id="message"
-        placeholder="Password"
-        autocomplete="current-password"
-        minlength="6"
-        required
-      >
-
-      <button type="submit" id="submitBtn">Sign in / Sign up</button>
-
-      <button type="button" id="homeBtn"
-        onclick="window.location.href='index.html'">
-        Home
-      </button>
+      <input type="text" id="name" placeholder="Your Email (sign in with your current account)" required>
+      <input type="password" id="message" placeholder="Password" required>
+      <button type="submit">Sign in / Sign up</button>
+      <button type="button" onclick="window.location.href='index.html'">Home</button>
     </form>
 
-    <button id="adminBtn" type="button" style="margin-top: 10px;">
-      Admin Login
-    </button>
+    <button id="adminBtn" type="button" style="margin-top: 10px;">Admin Login</button>
 
     <div id="adminPanel">
       <h2>Feedback Responses</h2>
-
       <div class="controls">
         <input type="text" id="search" placeholder="Search feedback...">
         <button type="button" id="refreshBtn">Refresh</button>
       </div>
-
       <div id="feedbackList">Loading...</div>
     </div>
   </div>
@@ -138,18 +113,14 @@
   <div id="notification"></div>
 
   <script>
-    // SUPABASE CONFIGURATION
-
     const SUPABASE_URL = "https://wqnwdjhehbpekvwjadxr.supabase.co";
 
-    const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY";
+    const SUPABASE_KEY = "YOUR_SUPABASE_ANON_OR_PUBLISHABLE_KEY";
 
     const supabaseClient = window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_KEY
     );
-
-    // ELEMENTS
 
     const form = document.getElementById('feedbackForm');
     const nameInput = document.getElementById('name');
@@ -160,170 +131,53 @@
     const feedbackList = document.getElementById('feedbackList');
     const searchInput = document.getElementById('search');
     const refreshBtn = document.getElementById('refreshBtn');
-    const submitBtn = document.getElementById('submitBtn');
-
-    let isSignUp = false;
-    let notificationTimer;
-
-    // NOTIFICATIONS
 
     function showNotification(message, success = true) {
       notification.textContent = message;
       notification.style.background = success ? '#28a745' : '#dc3545';
       notification.style.top = '20px';
-
-      clearTimeout(notificationTimer);
-
-      notificationTimer = setTimeout(() => {
+      setTimeout(() => {
         notification.style.top = '-60px';
       }, 3000);
     }
 
-    // SIGN UP / SIGN IN
-
-    function switchMode() {
-      isSignUp = !isSignUp;
-
-      submitBtn.textContent = isSignUp
-        ? "Sign Up"
-        : "Sign in";
-
-      messageInput.autocomplete = isSignUp
-        ? "new-password"
-        : "current-password";
+    function autoResize(el) {
+      el.style.height = '40px';
+      el.style.height = el.scrollHeight + 'px';
     }
 
-    // AUTHENTICATION
+    messageInput.addEventListener('input', () => autoResize(messageInput));
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const email = nameInput.value.trim();
-      const password = messageInput.value;
+      const name = nameInput.value.trim();
+      const message = messageInput.value.trim();
 
-      if (!email || !password) {
+      if (!name || !message) {
         showNotification("Please fill out all fields", false);
         return;
       }
 
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Please wait...";
+      const { error } = await supabaseClient
+        .from("feedback")
+        .insert([{ name, message }]);
 
-      try {
-        if (isSignUp) {
-
-          const { data, error } =
-            await supabaseClient.auth.signUp({
-              email,
-              password
-            });
-
-          if (error) throw error;
-
-          if (data.session) {
-            showNotification("Account created successfully!");
-          } else {
-            showNotification(
-              "Account created! Check your email to verify your account."
-            );
-          }
-
-        } else {
-
-          const { error } =
-            await supabaseClient.auth.signInWithPassword({
-              email,
-              password
-            });
-
-          if (error) throw error;
-
-          showNotification("Login successful!");
-
-          adminPanel.style.display = "none";
-          form.style.display = "none";
-          adminBtn.style.display = "none";
-
-        }
-
-      } catch (error) {
+      if (error) {
         console.error(error);
         showNotification(error.message, false);
-
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = isSignUp
-          ? "Sign Up"
-          : "Sign in / Sign up";
+      } else {
+        showNotification("Feedback submitted successfully!");
+        nameInput.value = "";
+        messageInput.value = "";
+        autoResize(messageInput);
       }
     });
-
-    // ADMIN LOGIN
-
-    adminBtn.addEventListener('click', async () => {
-
-      const email = prompt("Enter admin email:");
-
-      if (!email) return;
-
-      const password = prompt("Enter admin password:");
-
-      if (!password) return;
-
-      adminBtn.disabled = true;
-
-      try {
-        const { data, error } =
-          await supabaseClient.auth.signInWithPassword({
-            email: email.trim(),
-            password
-          });
-
-        if (error) throw error;
-
-        const user = data.user;
-
-        if (user.app_metadata?.role !== "admin") {
-          await supabaseClient.auth.signOut();
-
-          showNotification("Wrong admin account!", false);
-          return;
-        }
-
-        showNotification("Admin login successful!");
-
-        form.style.display = "none";
-        adminBtn.style.display = "none";
-        adminPanel.style.display = "block";
-
-        await loadFeedback();
-
-      } catch (error) {
-        console.error(error);
-        showNotification(error.message, false);
-
-      } finally {
-        adminBtn.disabled = false;
-      }
-    });
-
-    // LOAD FEEDBACK
 
     async function loadFeedback(filter = "") {
-
       feedbackList.textContent = "Loading...";
 
       try {
-        const { data: authData, error: authError } =
-          await supabaseClient.auth.getUser();
-
-        if (authError) throw authError;
-
-        if (!authData.user ||
-            authData.user.app_metadata?.role !== "admin") {
-          throw new Error("Admin access required.");
-        }
-
         const { data, error } = await supabaseClient
           .from("feedback")
           .select("*")
@@ -336,12 +190,12 @@
           String(f.message || "").toLowerCase().includes(filter.toLowerCase())
         );
 
+        feedbackList.innerHTML = "";
+
         if (filtered.length === 0) {
           feedbackList.textContent = "No feedback found.";
           return;
         }
-
-        feedbackList.replaceChildren();
 
         filtered.forEach(item => {
           const div = document.createElement("div");
@@ -363,50 +217,29 @@
         });
 
       } catch (error) {
-        console.error(error);
+        console.error("Feedback loading error:", error);
         feedbackList.textContent = "Error loading feedback: " + error.message;
       }
     }
 
-    // SEARCH
+    adminBtn.addEventListener('click', () => {
+      const pass = prompt("Enter admin password:");
+
+      if (pass === "savnacsigma") {
+        adminPanel.style.display = "block";
+        loadFeedback();
+      } else {
+        alert("Wrong password!");
+      }
+    });
 
     searchInput.addEventListener('input', () => {
       loadFeedback(searchInput.value);
     });
 
-    // REFRESH
-
     refreshBtn.addEventListener('click', () => {
       loadFeedback(searchInput.value);
     });
-
-    // AUTO RESTORE ADMIN SESSION
-
-    async function checkSession() {
-      const { data, error } =
-        await supabaseClient.auth.getSession();
-
-      if (error) {
-        showNotification("Unable to check login status.", false);
-        return;
-      }
-
-      const user = data.session?.user;
-
-      if (user && user.app_metadata?.role === "admin") {
-        form.style.display = "none";
-        adminBtn.style.display = "none";
-        adminPanel.style.display = "block";
-        await loadFeedback();
-      } else if (user) {
-        form.style.display = "none";
-        adminBtn.style.display = "none";
-        adminPanel.style.display = "none";
-      }
-    }
-
-    checkSession();
-
   </script>
 </body>
 </html>
