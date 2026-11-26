@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Canvas Arcade — Play Something Great</title>
+<link id="favicon" rel="icon" href="https://www.wabash.edu/images2/technology/canvas.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#090b10;--glass:rgba(17,21,33,.78);--border:rgba(255,255,255,.09);--card:rgba(255,255,255,.035);--hover:rgba(0,240,255,.09);--text:#f1f5f9;--muted:#94a3b8;--accent:#00f0ff;--accent2:#8b5cf6;--glow:rgba(0,240,255,.3);--scroll:rgba(0,240,255,.3)}
+body.light-mode{--bg:#edf2f8;--glass:rgba(255,255,255,.88);--border:rgba(15,23,42,.1);--card:rgba(15,23,42,.035);--hover:rgba(2,132,199,.1);--text:#0f172a;--muted:#64748b;--accent:#0284c7;--accent2:#6366f1;--glow:rgba(2,132,199,.2);--scroll:rgba(2,132,199,.3)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);min-height:100vh;padding-top:78px;transition:background .3s,color .3s}
+button,input,select{font:inherit}::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:var(--scroll);border-radius:20px}
+#particles-js{position:fixed;inset:0;z-index:-3;background:radial-gradient(ellipse at 50% 0%,#17243b 0%,#090b10 70%)}
+body.light-mode #particles-js{background:radial-gradient(ellipse at 50% 0%,#dbeafe,#edf2f8 75%)}
+.ambient{position:fixed;width:380px;height:380px;border-radius:50%;filter:blur(120px);opacity:.15;pointer-events:none;z-index:-2;background:var(--accent);top:180px;left:-180px}.ambient.two{background:var(--accent2);left:auto;right:-180px;top:450px}
+.top-bar{position:fixed;top:10px;left:50%;transform:translateX(-50%);width:calc(100% - 24px);max-width:1250px;min-height:52px;display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--border);border-radius:15px;box-shadow:0 12px 35px rgba(0,0,0,.3);z-index:9999;gap:8px}
+.top-left,.top-center,.top-right{display:flex;align-items:center;gap:7px}.top-center{color:var(--muted);font-size:12px;padding:6px 12px;background:var(--card);border:1px solid var(--border);border-radius:30px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:35px;min-width:35px;padding:0 10px;border-radius:9px;background:var(--card);border:1px solid var(--border);color:var(--text);cursor:pointer;text-decoration:none;font-size:13px;font-weight:500;transition:all .2s ease;white-space:nowrap}
+.btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}.btn:hover{transform:translateY(-2px);color:var(--accent);border-color:var(--accent);background:var(--hover);box-shadow:0 4px 18px var(--glow)}.btn:hover svg{transform:scale(1.08)}.btn.active{color:var(--accent);border-color:var(--accent);background:linear-gradient(135deg,rgba(0,240,255,.18),rgba(139,92,246,.18));box-shadow:0 0 15px var(--glow)}
+#secret-button{color:transparent;text-decoration:none;font-size:10px;cursor:default}
+.page-wrap{display:flex;justify-content:center;padding:25px 16px 50px}.content-wrapper{width:100%;max-width:900px;text-align:center;position:relative}.hero-header{display:flex;flex-direction:column;align-items:center;margin-bottom:25px}.hero-logo{height:85px;max-width:90%;object-fit:contain;filter:drop-shadow(0 0 18px var(--glow));transition:transform .3s}.hero-logo:hover{transform:scale(1.06)}
+h1{font-family:Orbitron,sans-serif;font-size:34px;margin:10px 0 5px;letter-spacing:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));background-clip:text;-webkit-background-clip:text;color:transparent}.subtitle{color:var(--muted);font-size:13px;margin-top:5px}#randomAbove{margin:12px 0;color:var(--muted);font-size:13px}
+.search-box{position:relative;margin:0 auto 16px;width:100%}.search-icon{position:absolute;left:17px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:19px;pointer-events:none}#searchInput{width:100%;padding:15px 18px 15px 48px;border-radius:13px;border:1px solid var(--border);background:var(--glass);backdrop-filter:blur(14px);color:var(--text);font-size:15px;outline:none;box-shadow:0 8px 25px rgba(0,0,0,.2);transition:.2s}#searchInput::placeholder{color:var(--muted)}#searchInput:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.game-heading{display:flex;justify-content:space-between;align-items:center;margin:8px 3px 12px;font-size:13px;color:var(--muted)}#gamesContainer{width:100%;max-height:590px;overflow-y:auto;padding:13px;border-radius:17px;border:1px solid var(--border);background:var(--glass);backdrop-filter:blur(16px);box-shadow:0 18px 45px rgba(0,0,0,.3)}#gamesList{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+#gamesList li{min-width:0;display:flex;align-items:center;justify-content:space-between;overflow:hidden;border:1px solid var(--border);border-radius:12px;background:var(--card);transition:all .2s}#gamesList li:hover{transform:translateY(-3px);border-color:var(--accent);background:var(--hover);box-shadow:0 6px 20px rgba(0,0,0,.3),0 0 12px var(--glow)}#gamesList li a{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:10px;text-align:left;text-decoration:none;color:var(--text);font-size:13px;font-weight:600}#gamesList li a span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.game-icon{width:39px;height:39px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:9px;font-family:Orbitron,sans-serif;font-size:12px;font-weight:800;color:white;background:linear-gradient(135deg,#0891b2,#7c3aed);box-shadow:inset 0 0 12px rgba(255,255,255,.12)}#gamesList li:nth-child(3n+1) .game-icon{background:linear-gradient(135deg,#0e7490,#2563eb)}#gamesList li:nth-child(3n+2) .game-icon{background:linear-gradient(135deg,#7c3aed,#db2777)}#gamesList li:nth-child(3n) .game-icon{background:linear-gradient(135deg,#059669,#0e7490)}
+.star{flex-shrink:0;padding:10px;color:var(--muted);cursor:pointer;font-size:19px;transition:.2s;user-select:none}.star:hover{transform:scale(1.25);color:#facc15}.star.favorited{color:#facc15;text-shadow:0 0 10px rgba(250,204,21,.6)}#emptyMessage{display:none;padding:30px;color:var(--muted);font-size:14px}#randomText{margin-top:14px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:11px;color:var(--muted);font-size:13px}#gameCount{color:var(--accent);font-weight:700}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(5px);z-index:9998;display:none}.modal-overlay.show{display:block}.settings-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.94);width:min(370px,calc(100% - 30px));padding:25px;display:none;flex-direction:column;gap:14px;background:var(--glass);color:var(--text);border:1px solid var(--accent);border-radius:17px;box-shadow:0 25px 70px rgba(0,0,0,.6),0 0 25px var(--glow);backdrop-filter:blur(20px);z-index:10000}.settings-modal.show{display:flex;transform:translate(-50%,-50%) scale(1)}.settings-modal h2{font-family:Orbitron,sans-serif;font-size:19px;margin:0 0 5px;color:var(--accent)}.settings-modal label{font-size:12px;color:var(--muted);font-weight:700;text-align:left}.settings-input{width:100%;padding:11px;border:1px solid var(--border);border-radius:9px;background:var(--card);color:var(--text);outline:none}.settings-input:focus{border-color:var(--accent)}.settings-input option{color:#111;background:#fff}#closeSettingsBtn{position:absolute;right:15px;top:12px;border:0;background:none;color:var(--text);font-size:23px;cursor:pointer}.settings-note{color:var(--muted);font-size:11px;text-align:left}
+.cursor-dot{position:fixed;width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);pointer-events:none;transform:translate(-50%,-50%);z-index:10002}.cursor{position:fixed;width:27px;height:27px;border:1px solid var(--accent);background:rgba(0,240,255,.07);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);z-index:10001;transition:width .18s,height .18s,background .18s}.cursor.hovering{width:42px;height:42px;background:rgba(0,240,255,.14);border-color:var(--accent2)}
+@media(max-width:850px){#gamesList{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:650px){body{padding-top:65px;cursor:auto}.top-bar{top:5px;width:calc(100% - 10px);min-height:46px;padding:5px;gap:3px}.top-left,.top-right{gap:4px}.top-center{display:none}.btn{min-width:30px;height:32px;padding:0 7px;font-size:12px}#welcomeMessage{display:none}.page-wrap{padding:22px 10px 35px}h1{font-size:27px}.hero-logo{height:70px}#gamesList{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}#gamesContainer{padding:8px;max-height:65vh}#gamesList li a{padding:8px;gap:7px;font-size:11px}.game-icon{width:34px;height:34px;font-size:10px}.star{padding:7px;font-size:16px}.cursor,.cursor-dot{display:none}}@media(max-width:370px){.top-bar{overflow-x:auto}#gamesList{grid-template-columns:1fr}}
+
+/* CANVAS ARCADE 3.0 */
+:root{--radius:16px}
+.page-wrap{padding-top:30px}
+.content-wrapper{max-width:1040px}
+.hero-header{margin-bottom:22px}
+.hero-header:after{content:"";display:block;width:90px;height:3px;margin-top:18px;border-radius:9px;background:linear-gradient(90deg,var(--accent),var(--accent2));box-shadow:0 0 18px var(--glow)}
+h1{font-size:clamp(30px,5vw,48px);letter-spacing:4px;text-shadow:0 0 32px var(--glow)}
+.subtitle{letter-spacing:2.5px;font-size:11px;font-weight:700}
+.hero-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:0 auto 22px}
+.hero-action{height:40px;padding:0 16px;border-radius:12px;font-weight:700}
+.hero-action.primary{background:linear-gradient(110deg,var(--accent),var(--accent2));color:#07111b;border:0}
+.hero-action.primary:hover{color:#07111b;filter:brightness(1.12)}
+.dashboard{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 auto 20px}
+.stat-card{padding:13px;border:1px solid var(--border);border-radius:14px;background:var(--glass);text-align:left;backdrop-filter:blur(14px)}
+.stat-card strong{display:block;color:var(--accent);font:800 20px Orbitron,sans-serif}
+.stat-card span{display:block;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:1.3px;margin-top:5px}
+.search-box{margin-bottom:12px}
+#searchInput{padding:16px 48px 16px 48px;border-radius:15px}
+.search-icon{left:17px}
+.search-hint{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:4px 6px;pointer-events:none}
+.library-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 12px;flex-wrap:wrap}
+.filter-pills{display:flex;gap:7px;flex-wrap:wrap}
+.filter-pill{border:1px solid var(--border);border-radius:999px;background:var(--glass);color:var(--muted);padding:8px 13px;font-size:11px;font-weight:700;cursor:pointer;transition:.2s}
+.filter-pill:hover,.filter-pill.active{color:var(--accent);border-color:var(--accent);background:var(--hover)}
+#sortSelect,#categorySelect{background:var(--glass);color:var(--text);border:1px solid var(--border);border-radius:9px;padding:8px 10px;font-size:11px;outline:none;max-width:100%}
+#gamesContainer{max-height:650px;padding:14px;border-radius:20px}
+#gamesList{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#gamesList li{position:relative;border-radius:15px;min-height:66px}
+#gamesList li a{padding:12px;font-size:13px}
+.game-icon{width:42px;height:42px;border-radius:12px}
+.star{font-size:17px}
+.game-meta{display:block;color:var(--muted);font-size:9px;font-weight:500;margin-top:3px;letter-spacing:.4px}
+#randomText{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:16px}
+#emptyMessage{line-height:1.7}
+.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:10010;padding:11px 16px;border:1px solid var(--accent);border-radius:12px;background:var(--glass);backdrop-filter:blur(16px);color:var(--text);font-size:12px;box-shadow:0 8px 30px rgba(0,0,0,.3);transition:.25s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+#gamesList li:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.library-extra{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.tool-btn{border:1px solid var(--border);border-radius:9px;background:var(--glass);color:var(--muted);padding:8px 10px;font-size:11px;font-weight:700;cursor:pointer}
+.tool-btn:hover,.tool-btn.active{border-color:var(--accent);color:var(--accent);background:var(--hover)}
+#gamesList.compact{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+#gamesList.compact li{min-height:48px}
+#gamesList.compact li a{padding:7px;gap:7px;font-size:11px}
+#gamesList.compact .game-icon{width:30px;height:30px;border-radius:8px}
+#gamesList.compact .game-meta{display:none}
+#gamesList li .game-category{display:block;color:var(--accent);font-size:8px;font-weight:800;letter-spacing:.7px;margin-top:3px;text-transform:uppercase}
+#backupInput{display:none}
+@media(max-width:850px){#gamesList.compact{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:650px){.library-extra{width:100%;justify-content:space-between}#gamesList.compact{grid-template-columns:repeat(2,minmax(0,1fr))}#categorySelect{flex:1}}
+@media(max-width:850px){#gamesList{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.dashboard{gap:7px}.stat-card{padding:10px}.stat-card strong{font-size:16px}.stat-card span{font-size:8px}.library-tools{align-items:flex-start}.filter-pills{gap:5px}.filter-pill{padding:7px 10px;font-size:10px}#gamesContainer{max-height:66vh}#gamesList li{min-height:60px}.game-meta{display:none}.search-hint{display:none}}
+@media(max-width:380px){#gamesList{grid-template-columns:1fr}.dashboard{grid-template-columns:repeat(3,1fr)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+</style>
+</head>
+<body>
+<div id="particles-js"></div><div class="ambient"></div><div class="ambient two"></div>
+<nav class="top-bar" aria-label="Main navigation">
+  <div class="top-left">
+    <a href="menu.html" class="btn" id="menuBtn" title="Menu" aria-label="Menu"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg></a>
+    <span id="welcomeMessage"></span>
+    <button class="btn" id="settingsBtn" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82A1.65 1.65 0 0 0 3.22 14H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    <a href="chat.html" class="btn" id="chatBtn" title="Chat" aria-label="Chat"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></a>
+    <a href="admin.html" class="btn" id="adminBtn" title="Admin" aria-label="Admin"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></a>
+    <a href="ytu.html" class="btn" id="YouTubeUnblockerBtn" title="YouTube" aria-label="YouTube"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="4"/><polygon points="10 8.5 16 12 10 15.5 10 8.5" fill="currentColor" stroke="none"/></svg></a>
+  </div>
+  <div class="top-center"><span id="dateTime"></span><a id="secret-button" href="realadmin.html">Visitors</a></div>
+  <div class="top-right">
+    <button class="btn" id="favBtn" title="Favorites" aria-label="Favorites"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></button>
+    <button class="btn" id="recentsBtn" title="Recently played" aria-label="Recently played"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg></button>
+    <button class="btn" id="bgToggleBtn" title="Change background" aria-label="Change background"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-1.1-.9-2-2-2h-1.5a1.5 1.5 0 0 1-1.2-2.4A2 2 0 0 0 14.7 4H12z"/><circle cx="7.5" cy="10" r="1"/><circle cx="10" cy="6.5" r="1"/><circle cx="15" cy="7" r="1"/></svg></button>
+    <button class="btn" id="musicToggleBtn" title="Music" aria-label="Music"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></button>
+    <button class="btn" id="modeToggle" title="Light/dark mode" aria-label="Light/dark mode"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button>
+  </div>
+</nav>
+<main class="page-wrap"><div class="content-wrapper">
+  <header class="hero-header"><img src="logo-christmas.png" class="hero-logo" alt="Site logo" onerror="this.style.display='none'"><h1 id="siteTitle">CANVAS ARCADE</h1><div class="subtitle">YOUR NEXT FAVORITE GAME IS ONE CLICK AWAY.</div></header>
+  <div class="hero-actions"><button class="btn hero-action primary" id="randomGameBtn">✦ Surprise me</button><button class="btn hero-action" id="clearFiltersBtn">↺ Reset library</button></div>
+  <div class="dashboard"><div class="stat-card"><strong id="totalStat">0</strong><span>GAMES IN LIBRARY</span></div><div class="stat-card"><strong id="favoritesStat">0</strong><span>YOUR FAVORITES</span></div><div class="stat-card"><strong id="recentStat">0</strong><span>RECENTLY PLAYED</span></div></div>
+  <div class="search-box"><span class="search-icon">⌕</span><input id="searchInput" type="search" placeholder="Search your next adventure..." autocomplete="off" aria-label="Search games"><span class="search-hint">/ to search</span></div>
+  <div class="library-tools"><div class="filter-pills"><button class="filter-pill active" data-filter="all">All games</button><button class="filter-pill" data-filter="favorites">★ Favorites</button><button class="filter-pill" data-filter="recents">◷ Recent</button></div><div class="library-extra"><select id="categorySelect" aria-label="Filter by genre"><option value="all">All genres</option><option value="action">Action</option><option value="arcade">Arcade</option><option value="racing">Racing</option><option value="sports">Sports</option><option value="strategy">Strategy</option><option value="puzzle">Puzzle</option><option value="simulation">Simulation</option></select><select id="sortSelect" aria-label="Sort games"><option value="default">Default order</option><option value="az">Name: A–Z</option><option value="za">Name: Z–A</option><option value="recent">Recently played first</option></select><button class="tool-btn" id="viewToggle" type="button" title="Toggle compact view">▦ View</button><button class="tool-btn" id="exportBtn" type="button" title="Export favorites and history">⇩ Backup</button><button class="tool-btn" id="importBtn" type="button" title="Restore a backup">⇧ Restore</button><input id="backupInput" type="file" accept="application/json"></div></div>
+  <div class="game-heading"><span id="filterTitle">ALL GAMES</span><span><span id="gameCount">0</span> GAMES</span></div>
+  <section id="gamesContainer" aria-label="Games"><ul id="gamesList"></ul><div id="emptyMessage">No games found. Try another search or reset your filters.</div></section>
+  <div id="randomText"><span>✦</span><span>Pick a game, chase a high score, and have fun.</span></div>
+</div></main>
+<div class="modal-overlay" id="modalOverlay"></div>
+<section class="settings-modal" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsHeading">
+  <button id="closeSettingsBtn" aria-label="Close settings">&times;</button><h2 id="settingsHeading">SETTINGS</h2>
+  <label for="tabPreset">TAB CLOAK PRESET</label>
+  <select id="tabPreset" class="settings-input"><option value="canvas">Canvas</option><option value="google">Google</option><option value="drive">Google Drive</option><option value="classroom">Google Classroom</option><option value="newtab">New Tab</option><option value="custom">Custom URL...</option></select>
+  <input id="customIconUrl" class="settings-input" placeholder="Custom icon image URL" style="display:none">
+  <input id="customTabTitle" class="settings-input" placeholder="Custom tab title (optional)">
+  <button class="btn" id="applyTabBtn">Apply Tab Logo</button>
+  <div class="settings-note">Your tab title and favicon preferences are saved on this device.</div>
+</section>
+<div id="musicPlayer" style="display:none"></div><div class="toast" id="toast" role="status" aria-live="polite"></div><div class="cursor" id="cursor"></div><div class="cursor-dot" id="cursorDot"></div>
+<script>
+const games=[
+["1v1.lol","1v1lol.html"],["2048","2048.html"],["A Small World Cup","aswc.html"],["Age Of War","ageofwar.html"],["Amazing Strange Rope Police","asrp.html"],["Among Us","amongus.html"],["Awesome Tanks 2","awesometanks2.html"],["Bacon May Die","baconmaydie.html"],["Basket Random","basketrandom.html"],["Bit Planes","bitplanes.html"],["Bitlife","bitlife.html"],["Bit Gun.io","bitgun-io.html"],["Block Blast","blockblast.html"],["Bloons TD","bloonstd.html"],["Boxing Random","boxingrandom.html"],["Baseball Bros.","baseballbros.html"],["Clicker Hero","clickerhero.html"],["COD Zombies","cod-zombies.html"],["Cluster Rush","clusterrush.html"],["Cookie Clicker","cookieclicker.html"],["Crossyroad","crossyroad.html"],["Chrome Dino","chromedino.html"],["Drive Mad","drivemad.html"],["Drift Boss","driftboss.html"],["Drift Hunters","drift-hunters.html"],["Duck Life","ducklife.html"],["Five Nights at Freddy's","fnaf.html"],["Five Nights at Freddy's 2","fnaf2.html"],["Funny Shooter 2","funnyshooter2.html"],["Football Bros.","footballbros.html"],["Geometry Dash","geometrydash.html"],["Get Away Shootout","getawayshootout.html"],["Granny","granny.html"],["Gun Spin","gunspin.html"],["Hole.io","hole-io.html"],["Hextris","hextris.html"],["JavaScript Roulette","js.html"],["Learn to Fly","learntofly.html"],["Learn to Fly 2","learntofly2.html"],["Learn to Fly 3","learntofly3.html"],["MotoX3M","motox3m.html"],["Monkey Mart","monkeymart.html"],["Minecraft","minecraft-menu.html"],["OvO","ovo.html"],["Oregon Trail","oregontrail.html"],["Paper.io 2","paper.io2.html"],["Poly Track","polytrack.html"],["Ragdoll Archers","ragdollarchers.html"],["Ragdoll Hit","ragdollhit.html"],["Retro Bowl","retrobowl.html"],["Real Flight Simulator","realfs.html"],["Retro Bowl College","retrobowlcollege.html"],["Rooftop Snipers","rooftopsnipers.html"],["Subway Surfers","subwaysurfers.html"],["Slope","slope.html"],["Stick Man Hook","stickmanhook.html"],["Snow Rider 3D","snowrider3d.html"],["Snake.io","snake-io.html"],["SUPERHOT","superhot.html"],["Steal A Brainrot","sab.html"],["Soccer Bros.","soccerbros.html"],["Time Shooter 2","timeshooter2.html"],["Time Shooter 3","timeshooter3.html"],["Tomb Of The Mask","totm.html"],["Tetris","tetris.html"],["We Become What We Behold","wbwwb.html"],["Whack Your Boss","whackyourboss.html"],["Wheelie Bike","wheeliebike.html"],["Yohoho.io","yohoho-io.html"]
+];
+const $=id=>document.getElementById(id),gamesList=$("gamesList"),searchInput=$("searchInput"),gameCount=$("gameCount"),emptyMessage=$("emptyMessage");
+function loadList(key){try{const x=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(x)?x:[]}catch{return[]}}
+let favorites=loadList("favorites"),recents=loadList("recents"),currentFilter="all";
+function initials(name){return name.split(/\s+/).slice(0,2).map(w=>w[0]).join("").toUpperCase()}
+function showToast(message){const t=$("toast");t.textContent=message;t.classList.add("show");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>t.classList.remove("show"),1900)}
+function updateStats(){$("totalStat").textContent=games.length;$("favoritesStat").textContent=favorites.length;$("recentStat").textContent=recents.length}
+const categoryFor=name=>{
+ const n=name.toLowerCase();
+ if(/slope|moto|drift|drive mad|snow rider|wheelie|poly track|flight/.test(n))return "racing";
+ if(/soccer|football|basket|baseball|boxing|cup|retro bowl/.test(n))return "sports";
+ if(/2048|tetris|hextris|block blast|snake|crossy|tomb|we become/.test(n))return "puzzle";
+ if(/bloons|age of war|monkey mart|oregon trail|bitlife|cookie clicker/.test(n))return "strategy";
+ if(/minecraft|simulator|life|mart|bitlife/.test(n))return "simulation";
+ if(/fnaf|granny|shooter|gun|zombies|superhot|1v1|among us|archer|war|hook|yohoho|assassin/.test(n))return "action";
+ return "arcade";
+};
+function renderGames(){
+ gamesList.replaceChildren();const search=searchInput.value.toLowerCase().trim(),category=$("categorySelect").value;
+ let filtered=games.filter(([name])=>name.toLowerCase().includes(search)&&(currentFilter==="all"||(currentFilter==="favorites"&&favorites.includes(name))||(currentFilter==="recents"&&recents.includes(name)))&&(category==="all"||categoryFor(name)===category));
+ const sort=$("sortSelect").value;if(sort==="az")filtered.sort((a,b)=>a[0].localeCompare(b[0]));if(sort==="za")filtered.sort((a,b)=>b[0].localeCompare(a[0]));if(sort==="recent")filtered.sort((a,b)=>recents.indexOf(a[0])-recents.indexOf(b[0]));
+ filtered.forEach(([name,href])=>{
+  const li=document.createElement("li"),link=document.createElement("a"),icon=document.createElement("div"),label=document.createElement("span"),star=document.createElement("button"),meta=document.createElement("small"),genre=document.createElement("small");
+  link.href=href;link.title="Play "+name;icon.className="game-icon";icon.textContent=initials(name);label.textContent=name;meta.className="game-meta";meta.textContent=recents.includes(name)?"PLAY AGAIN":"READY TO PLAY";genre.className="game-category";genre.textContent=categoryFor(name);label.append(meta,genre);link.append(icon,label);
+  link.addEventListener("click",()=>{recents=[name,...recents.filter(x=>x!==name)].slice(0,30);localStorage.setItem("recents",JSON.stringify(recents));});
+  star.type="button";star.className="star"+(favorites.includes(name)?" favorited":"");star.textContent="★";star.title=favorites.includes(name)?"Remove from favorites":"Add to favorites";star.setAttribute("aria-label",star.title);
+  star.addEventListener("click",()=>{favorites=favorites.includes(name)?favorites.filter(x=>x!==name):[...favorites,name];localStorage.setItem("favorites",JSON.stringify(favorites));renderGames();showToast(favorites.includes(name)?"Added to favorites":"Removed from favorites")});
+  li.append(link,star);gamesList.append(li);
+ });
+ gameCount.textContent=filtered.length;emptyMessage.style.display=filtered.length?"none":"block";
+ $("filterTitle").textContent=currentFilter==="favorites"?"YOUR FAVORITES":currentFilter==="recents"?"RECENTLY PLAYED":category!=="all"?category.toUpperCase()+" GAMES":search?"SEARCH RESULTS":"ALL GAMES";
+ document.querySelectorAll(".filter-pill").forEach(b=>b.classList.toggle("active",b.dataset.filter===currentFilter));
+ $("favBtn").classList.toggle("active",currentFilter==="favorites");$("recentsBtn").classList.toggle("active",currentFilter==="recents");
+ updateStats();
+}
+searchInput.addEventListener("input",renderGames);
+$("favBtn").addEventListener("click",()=>{currentFilter=currentFilter==="favorites"?"all":"favorites";renderGames()});
+$("recentsBtn").addEventListener("click",()=>{currentFilter=currentFilter==="recents"?"all":"recents";renderGames()});
+document.querySelectorAll(".filter-pill").forEach(b=>b.addEventListener("click",()=>{currentFilter=b.dataset.filter;renderGames()}));
+$("sortSelect").addEventListener("change",renderGames);
+$("categorySelect").addEventListener("change",renderGames);
+$("viewToggle").addEventListener("click",()=>{gamesList.classList.toggle("compact");const compact=gamesList.classList.contains("compact");localStorage.setItem("compactView",compact);$("viewToggle").classList.toggle("active",compact);showToast(compact?"Compact view enabled":"Comfortable view enabled")});
+if(localStorage.getItem("compactView")==="true"){gamesList.classList.add("compact");$("viewToggle").classList.add("active")}
+$("exportBtn").addEventListener("click",()=>{const data={version:1,favorites,recents,lightMode:localStorage.getItem("lightMode"),compactView:localStorage.getItem("compactView")};const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="canvas-arcade-backup.json";a.click();URL.revokeObjectURL(url);showToast("Backup exported")});
+$("importBtn").addEventListener("click",()=>$("backupInput").click());
+$("backupInput").addEventListener("change",async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(!data||!Array.isArray(data.favorites)||!Array.isArray(data.recents))throw Error("Invalid backup");const valid=new Set(games.map(g=>g[0]));favorites=[...new Set(data.favorites.filter(x=>valid.has(x)))];recents=[...new Set(data.recents.filter(x=>valid.has(x)))].slice(0,30);localStorage.setItem("favorites",JSON.stringify(favorites));localStorage.setItem("recents",JSON.stringify(recents));if(typeof data.lightMode==="string")localStorage.setItem("lightMode",data.lightMode);if(typeof data.compactView==="string")localStorage.setItem("compactView",data.compactView);document.body.classList.toggle("light-mode",localStorage.getItem("lightMode")==="true");gamesList.classList.toggle("compact",localStorage.getItem("compactView")==="true");$("viewToggle").classList.toggle("active",gamesList.classList.contains("compact"));updateModeIcon();renderGames();showToast("Backup restored")}catch(err){showToast("That backup file isn't valid")}e.target.value=""});
+$("clearFiltersBtn").addEventListener("click",()=>{currentFilter="all";searchInput.value="";$("sortSelect").value="default";$("categorySelect").value="all";renderGames();showToast("Library reset")});
+$("randomGameBtn").addEventListener("click",()=>{const pool=games.filter(([n])=>currentFilter==="favorites"?favorites.includes(n):currentFilter==="recents"?recents.includes(n):true);if(!pool.length){showToast("Nothing here yet — try All games");return}const [name,href]=pool[Math.floor(Math.random()*pool.length)];showToast("Launching "+name+"…");setTimeout(()=>location.href=href,450)});
+document.addEventListener("keydown",e=>{if(e.key==="/"&&!["INPUT","TEXTAREA","SELECT"].includes(document.activeElement.tagName)){e.preventDefault();searchInput.focus()}if(e.key.toLowerCase()==="r"&&!["INPUT","TEXTAREA","SELECT"].includes(document.activeElement.tagName))$("randomGameBtn").click()});
+function updateTime(){$("dateTime").textContent=new Date().toLocaleString()}updateTime();setInterval(updateTime,1000);
+if(localStorage.getItem("lightMode")==="true")document.body.classList.add("light-mode");
+function updateModeIcon(){$("modeToggle").innerHTML=document.body.classList.contains("light-mode")?'<svg viewBox="0 0 24 24"><path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5z"/></svg>':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>'}updateModeIcon();
+$("modeToggle").addEventListener("click",()=>{document.body.classList.toggle("light-mode");localStorage.setItem("lightMode",document.body.classList.contains("light-mode"));updateModeIcon()});
+const texts=["welcome to the game zone.","loading fun... complete.","one more game can't hurt.","your next high score starts here.","find a new favorite and enjoy the game."];$("randomText").textContent=texts[Math.floor(Math.random()*texts.length)];
+const settingsModal=$("settingsModal"),overlay=$("modalOverlay");function openSettings(){settingsModal.classList.add("show");overlay.classList.add("show")}function closeSettings(){settingsModal.classList.remove("show");overlay.classList.remove("show")}
+$("settingsBtn").addEventListener("click",openSettings);$("closeSettingsBtn").addEventListener("click",closeSettings);overlay.addEventListener("click",closeSettings);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSettings();if(e.key.toLowerCase()==="q"&&!["INPUT","TEXTAREA","SELECT"].includes(document.activeElement.tagName))location.href="https://canvas.nebo.edu/"});
+const presets={canvas:{title:"Canvas",icon:"https://www.wabash.edu/images2/technology/canvas.png"},google:{title:"Google",icon:"googlelogo.png"},drive:{title:"Home - Google Drive",icon:"googledrivelogo.png"},classroom:{title:"Home",icon:"google-classroom.png"},newtab:{title:"New Tab",icon:"newtablogo.png"}};
+const presetSelect=$("tabPreset"),customIcon=$("customIconUrl"),customTitle=$("customTabTitle");
+presetSelect.addEventListener("change",()=>customIcon.style.display=presetSelect.value==="custom"?"block":"none");
+function setTabCloak(title,icon){if(title){document.title=title;localStorage.setItem("savedTabTitle",title)}if(icon){$("favicon").href=icon;localStorage.setItem("savedTabIcon",icon)}}
+$("applyTabBtn").addEventListener("click",()=>{const choice=presetSelect.value;let title=customTitle.value.trim(),icon="";if(choice==="custom"){icon=customIcon.value.trim();if(!icon){alert("Please enter an image URL.");return}try{const u=new URL(icon);if(!["http:","https:"].includes(u.protocol))throw Error()}catch{alert("Enter a valid http or https image URL.");return}title=title||"Canvas"}else{title=title||presets[choice].title;icon=presets[choice].icon}setTabCloak(title,icon);closeSettings()});
+const savedTitle=localStorage.getItem("savedTabTitle"),savedIcon=localStorage.getItem("savedTabIcon");if(savedTitle||savedIcon)setTabCloak(savedTitle,savedIcon);
+const backgrounds=["particles","images/background/bg1.jpg","images/background/bg2.jpg"],particlesDiv=$("particles-js");let currentBg=localStorage.getItem("currentBg")||"particles";if(!backgrounds.includes(currentBg))currentBg="particles";
+function setBackground(bg){particlesDiv.style.background=bg==="particles"?"":`url("${bg}") center/cover no-repeat`;if(bg==="particles")particlesDiv.style.background="radial-gradient(ellipse at 50% 0%,#17243b 0%,#090b10 70%)";currentBg=bg;localStorage.setItem("currentBg",bg)}setBackground(currentBg);
+$("bgToggleBtn").addEventListener("click",()=>setBackground(backgrounds[(backgrounds.indexOf(currentBg)+1)%backgrounds.length]));
+let musicPlayer,musicIsPlaying=false,youtubeReady=false;
+window.onYouTubeIframeAPIReady=function(){musicPlayer=new YT.Player("musicPlayer",{height:"0",width:"0",videoId:"V48HXBP41vs",playerVars:{autoplay:0,controls:0,loop:1,playlist:"V48HXBP41vs"},events:{onReady:()=>youtubeReady=true}})};
+const ytScript=document.createElement("script");ytScript.src="https://www.youtube.com/iframe_api";document.head.append(ytScript);
+$("musicToggleBtn").addEventListener("click",()=>{if(!youtubeReady||!musicPlayer){$("musicToggleBtn").title="Music player is loading. Try again shortly.";return}if(!musicIsPlaying){musicPlayer.playVideo();$("musicToggleBtn").classList.add("active");musicIsPlaying=true}else{musicPlayer.pauseVideo();$("musicToggleBtn").classList.remove("active");musicIsPlaying=false}});
+const cursor=$("cursor"),cursorDot=$("cursorDot");document.addEventListener("mousemove",e=>{cursor.style.left=cursorDot.style.left=e.clientX+"px";cursor.style.top=cursorDot.style.top=e.clientY+"px"});document.addEventListener("mouseover",e=>{if(e.target.closest("a,button,.star"))cursor.classList.add("hovering")});document.addEventListener("mouseout",e=>{if(e.target.closest("a,button,.star"))cursor.classList.remove("hovering")});
+if(location.pathname.endsWith("menu.html"))$("menuBtn").classList.add("active");renderGames();
+</script>
+</body>
+</html>
