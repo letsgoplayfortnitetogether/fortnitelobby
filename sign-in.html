@@ -1,0 +1,370 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas - Login</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 450px;
+      width: 100%;
+      background: #1e1e1e;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #222;
+      color: white;
+      font-size: 16px;
+    }
+
+    button {
+      background: #007bff;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    #homeBtn {
+      background: #444;
+    }
+
+    #logoutBtn {
+      background: #dc3545;
+      display: none;
+    }
+
+    #notification {
+      position: fixed;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #28a745;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      transition: top 0.4s ease;
+      z-index: 1000;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    #accountInfo {
+      display: none;
+      text-align: center;
+    }
+
+    .switch {
+      text-align: center;
+      margin-top: 15px;
+      color: #aaa;
+    }
+
+    .switch span {
+      color: #007bff;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1 id="heading">Login</h1>
+
+    <form id="authForm">
+
+      <input
+        type="email"
+        id="email"
+        placeholder="Your Email"
+        autocomplete="email"
+        required
+      >
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Password"
+        autocomplete="current-password"
+        minlength="6"
+        required
+      >
+
+      <button type="submit" id="submitBtn">
+        Login
+      </button>
+
+    </form>
+
+    <div class="switch" id="switchText">
+      Don't have an account?
+      <span id="switchBtn">Sign Up</span>
+    </div>
+
+    <div id="accountInfo">
+      <h2>Welcome!</h2>
+      <p id="userEmail"></p>
+      <button type="button" id="logoutBtn">Logout</button>
+    </div>
+
+    <button type="button" id="homeBtn"
+      onclick="window.location.href='index.html'">
+      Home
+    </button>
+
+  </div>
+
+  <div id="notification"></div>
+
+  <script>
+    // SUPABASE CONFIGURATION
+
+    const SUPABASE_URL =
+      "https://wqnwdjhehbpekvwjadxr.supabase.co";
+
+    const SUPABASE_KEY =
+      "YOUR_SUPABASE_ANON_OR_PUBLISHABLE_KEY";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+    // ELEMENTS
+
+    const authForm = document.getElementById("authForm");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+
+    const heading = document.getElementById("heading");
+    const submitBtn = document.getElementById("submitBtn");
+    const switchBtn = document.getElementById("switchBtn");
+    const switchText = document.getElementById("switchText");
+
+    const accountInfo = document.getElementById("accountInfo");
+    const userEmail = document.getElementById("userEmail");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const notification = document.getElementById("notification");
+
+    let isSignUp = false;
+
+    // NOTIFICATIONS
+
+    let notificationTimer;
+
+    function showNotification(message, success = true) {
+      notification.textContent = message;
+
+      notification.style.background =
+        success ? "#28a745" : "#dc3545";
+
+      notification.style.top = "20px";
+
+      clearTimeout(notificationTimer);
+
+      notificationTimer = setTimeout(() => {
+        notification.style.top = "-100px";
+      }, 3000);
+    }
+
+    // SWITCH LOGIN / SIGNUP
+
+    switchBtn.addEventListener("click", () => {
+      isSignUp = !isSignUp;
+
+      heading.textContent =
+        isSignUp ? "Sign Up" : "Login";
+
+      submitBtn.textContent =
+        isSignUp ? "Create Account" : "Login";
+
+      switchText.innerHTML = isSignUp
+        ? 'Already have an account? <span id="switchBtn">Login</span>'
+        : 'Don\'t have an account? <span id="switchBtn">Sign Up</span>';
+
+      document.getElementById("switchBtn")
+        .addEventListener("click", switchMode);
+
+      passwordInput.autocomplete =
+        isSignUp ? "new-password" : "current-password";
+    });
+
+    function switchMode() {
+      isSignUp = !isSignUp;
+
+      heading.textContent = isSignUp ? "Sign Up" : "Login";
+      submitBtn.textContent = isSignUp ? "Create Account" : "Login";
+
+      switchText.innerHTML = isSignUp
+        ? 'Already have an account? <span id="switchBtn">Login</span>'
+        : 'Don\'t have an account? <span id="switchBtn">Sign Up</span>';
+
+      document.getElementById("switchBtn")
+        .addEventListener("click", switchMode);
+
+      passwordInput.autocomplete =
+        isSignUp ? "new-password" : "current-password";
+    }
+
+    // AUTHENTICATION
+
+    authForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        showNotification("Please fill in all fields.", false);
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Please wait...";
+
+      try {
+        if (isSignUp) {
+
+          const { data, error } =
+            await supabaseClient.auth.signUp({
+              email: email,
+              password: password
+            });
+
+          if (error) throw error;
+
+          if (data.session) {
+            showNotification("Account created successfully!");
+          } else {
+            showNotification(
+              "Account created! Check your email to verify your account."
+            );
+          }
+
+        } else {
+
+          const { error } =
+            await supabaseClient.auth.signInWithPassword({
+              email: email,
+              password: password
+            });
+
+          if (error) throw error;
+
+          showNotification("Login successful!");
+
+        }
+
+      } catch (error) {
+        console.error(error);
+        showNotification(error.message, false);
+
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent =
+          isSignUp ? "Create Account" : "Login";
+      }
+    });
+
+    // LOGOUT
+
+    logoutBtn.addEventListener("click", async () => {
+
+      const { error } = await supabaseClient.auth.signOut();
+
+      if (error) {
+        showNotification(error.message, false);
+        return;
+      }
+
+      showNotification("Logged out successfully!");
+
+    });
+
+    // UPDATE USER INTERFACE
+
+    function updateUI(user) {
+
+      if (user) {
+        authForm.style.display = "none";
+        switchText.style.display = "none";
+        accountInfo.style.display = "block";
+        logoutBtn.style.display = "block";
+
+        userEmail.textContent = user.email || "";
+
+      } else {
+        authForm.style.display = "block";
+        switchText.style.display = "block";
+        accountInfo.style.display = "none";
+        logoutBtn.style.display = "none";
+      }
+    }
+
+    // CHECK CURRENT SESSION
+
+    async function checkSession() {
+
+      const { data, error } =
+        await supabaseClient.auth.getSession();
+
+      if (error) {
+        showNotification("Unable to check login status.", false);
+        return;
+      }
+
+      updateUI(data.session?.user || null);
+    }
+
+    // AUTH STATE CHANGES
+
+    supabaseClient.auth.onAuthStateChange(
+      (_event, session) => {
+        updateUI(session?.user || null);
+      }
+    );
+
+    checkSession();
+
+  </script>
+
+</body>
+</html>
