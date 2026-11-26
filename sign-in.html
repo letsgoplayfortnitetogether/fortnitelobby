@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Canvas</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://jsdelivr.net"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -24,7 +23,7 @@
       background: #1e1e1e;
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     }
     h1 {
       text-align: center;
@@ -63,7 +62,7 @@
       padding: 12px 20px;
       border-radius: 8px;
       font-weight: bold;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
       transition: top 0.4s ease;
       z-index: 1000;
     }
@@ -98,13 +97,13 @@
       <button type="button" onclick="window.location.href='index.html'">Home</button>
     </form>
 
-    <button id="adminBtn" type="button" style="margin-top: 10px;">Admin Login</button>
+    <button id="adminBtn" style="margin-top: 10px;">Admin Login</button>
 
     <div id="adminPanel">
       <h2>Feedback Responses</h2>
       <div class="controls">
         <input type="text" id="search" placeholder="Search feedback...">
-        <button type="button" id="refreshBtn">Refresh</button>
+        <button id="refreshBtn">Refresh</button>
       </div>
       <div id="feedbackList">Loading...</div>
     </div>
@@ -113,14 +112,9 @@
   <div id="notification"></div>
 
   <script>
-    const SUPABASE_URL = "https://wqnwdjhehbpekvwjadxr.supabase.co";
-
-    const SUPABASE_KEY = "YOUR_SUPABASE_ANON_OR_PUBLISHABLE_KEY";
-
-    const supabaseClient = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
+    const SUPABASE_URL = "https://supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxbndkamhlaGJwZWt2d2phZHhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyNDMwODYsImV4cCI6MjA3MzgxOTA4Nn0.npkPoVq08u8WHu05wzj5J3mZ_-1gUxsErQ4xqMtHths";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const form = document.getElementById('feedbackForm');
     const nameInput = document.getElementById('name');
@@ -150,24 +144,19 @@
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const name = nameInput.value.trim();
       const message = messageInput.value.trim();
-
       if (!name || !message) {
         showNotification("Please fill out all fields", false);
         return;
       }
 
-      const { error } = await supabaseClient
-        .from("feedback")
-        .insert([{ name, message }]);
-
+      const { error } = await supabaseClient.from("feedback").insert([{ name, message }]);
       if (error) {
         console.error(error);
-        showNotification(error.message, false);
+        showNotification("Failed to submit feedback", false);
       } else {
-        showNotification("Feedback submitted successfully!");
+        showNotification("Savnac is having trouble loading. Try Again Later");
         nameInput.value = "";
         messageInput.value = "";
         autoResize(messageInput);
@@ -175,56 +164,38 @@
     });
 
     async function loadFeedback(filter = "") {
-      feedbackList.textContent = "Loading...";
+      const { data, error } = await supabaseClient
+        .from("feedback")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-      try {
-        const { data, error } = await supabaseClient
-          .from("feedback")
-          .select("*")
-          .order("created_at", { ascending: false });
-
-        if (error) throw error;
-
-        const filtered = (data || []).filter(f =>
-          String(f.name || "").toLowerCase().includes(filter.toLowerCase()) ||
-          String(f.message || "").toLowerCase().includes(filter.toLowerCase())
-        );
-
-        feedbackList.innerHTML = "";
-
-        if (filtered.length === 0) {
-          feedbackList.textContent = "No feedback found.";
-          return;
-        }
-
-        filtered.forEach(item => {
-          const div = document.createElement("div");
-          div.classList.add("feedback-item");
-
-          const strong = document.createElement("strong");
-          strong.textContent = item.name || "Anonymous";
-
-          const answer = document.createElement("span");
-          answer.textContent = ": " + (item.message || "");
-
-          const date = document.createElement("small");
-          date.textContent = item.created_at
-            ? new Date(item.created_at).toLocaleString()
-            : "";
-
-          div.append(strong, answer, document.createElement("br"), date);
-          feedbackList.appendChild(div);
-        });
-
-      } catch (error) {
-        console.error("Feedback loading error:", error);
-        feedbackList.textContent = "Error loading feedback: " + error.message;
+      if (error) {
+        feedbackList.innerHTML = "<p style='color:red;'>Error loading feedback.</p>";
+        console.error(error);
+        return;
       }
+
+      const filtered = data.filter(f =>
+        f.name.toLowerCase().includes(filter.toLowerCase()) ||
+        f.message.toLowerCase().includes(filter.toLowerCase())
+      );
+
+      if (filtered.length === 0) {
+        feedbackList.innerHTML = "<p>No feedback found.</p>";
+        return;
+      }
+
+      feedbackList.innerHTML = "";
+      filtered.forEach(item => {
+        const div = document.createElement("div");
+        div.classList.add("feedback-item");
+        div.innerHTML = `<strong>${item.name}</strong>: ${item.message}<br><small>${new Date(item.created_at).toLocaleString()}</small>`;
+        feedbackList.appendChild(div);
+      });
     }
 
     adminBtn.addEventListener('click', () => {
       const pass = prompt("Enter admin password:");
-
       if (pass === "savnacsigma") {
         adminPanel.style.display = "block";
         loadFeedback();
@@ -233,13 +204,8 @@
       }
     });
 
-    searchInput.addEventListener('input', () => {
-      loadFeedback(searchInput.value);
-    });
-
-    refreshBtn.addEventListener('click', () => {
-      loadFeedback(searchInput.value);
-    });
+    searchInput.addEventListener('input', () => loadFeedback(searchInput.value));
+    refreshBtn.addEventListener('click', () => loadFeedback(searchInput.value));
   </script>
 </body>
 </html>
