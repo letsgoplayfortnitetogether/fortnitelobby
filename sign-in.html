@@ -17,22 +17,22 @@ body {
   color: white;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   min-height: 100vh;
   margin: 0;
   padding: 20px;
 }
 
 .container {
-  max-width: 700px;
+  max-width: 450px;
   width: 100%;
   background: #1e1e1e;
   padding: 25px;
   border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,.3);
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
 }
 
-h1, h2 { text-align: center; }
+h1 { text-align: center; }
 
 input, button {
   width: 100%;
@@ -52,59 +52,11 @@ button {
 }
 
 button:hover { background: #0056b3; }
-button:disabled { opacity: .6; cursor: wait; }
 
 #homeBtn { background: #444; }
 #adminBtn { background: #8b5cf6; }
-#logoutBtn { background: #dc3545; }
+#logoutBtn { background: #dc3545; display: none; }
 #refreshBtn { background: #198754; }
-
-#adminPanel, #accountInfo {
-  display: none;
-}
-
-#adminPanel {
-  margin-top: 20px;
-  background: #292929;
-  padding: 15px;
-  border-radius: 10px;
-}
-
-#accountInfo {
-  text-align: center;
-}
-
-.switch {
-  text-align: center;
-  color: #aaa;
-  margin: 15px 0;
-}
-
-.switch span {
-  color: #2196f3;
-  cursor: pointer;
-}
-
-.controls {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.controls input { flex: 1; min-width: 0; }
-.controls button { width: auto; }
-
-.feedback-item {
-  border-bottom: 1px solid #444;
-  padding: 12px 0;
-  overflow-wrap: anywhere;
-}
-
-.feedback-item:last-child { border-bottom: none; }
-
-.feedback-item small {
-  color: #aaa;
-}
 
 #notification {
   position: fixed;
@@ -115,11 +67,61 @@ button:disabled { opacity: .6; cursor: wait; }
   color: white;
   padding: 12px 20px;
   border-radius: 8px;
-  transition: top .4s ease;
+  transition: top 0.4s ease;
   z-index: 1000;
   max-width: 90%;
   text-align: center;
 }
+
+#accountInfo {
+  display: none;
+  text-align: center;
+}
+
+.switch {
+  text-align: center;
+  margin-top: 15px;
+  color: #aaa;
+}
+
+.switch span {
+  color: #007bff;
+  cursor: pointer;
+}
+
+#adminPanel {
+  display: none;
+  margin-top: 20px;
+  background: #292929;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+#adminPanel h2 { text-align: center; }
+
+.feedback-item {
+  border-bottom: 1px solid #444;
+  padding: 12px 0;
+  overflow-wrap: anywhere;
+}
+
+.feedback-item:last-child { border-bottom: none; }
+
+.feedback-item small { color: #aaa; }
+
+.controls {
+  display: flex;
+  gap: 8px;
+}
+
+.controls input { min-width: 0; }
+.controls button { width: auto; }
+
+#feedbackCount {
+  color: #aaa;
+  font-size: 14px;
+}
+
 </style>
 </head>
 
@@ -127,79 +129,81 @@ button:disabled { opacity: .6; cursor: wait; }
 
 <div class="container">
 
-  <h1 id="heading">Login</h1>
+<h1 id="heading">Login</h1>
 
-  <form id="authForm">
+<form id="authForm">
 
-    <input
-      type="email"
-      id="email"
-      placeholder="Your Email"
-      autocomplete="email"
-      required
-    >
+<input
+  type="email"
+  id="email"
+  placeholder="Your Email"
+  autocomplete="email"
+  required
+>
 
-    <input
-      type="password"
-      id="password"
-      placeholder="Password"
-      minlength="6"
-      required
-    >
+<input
+  type="password"
+  id="password"
+  placeholder="Password"
+  autocomplete="current-password"
+  minlength="6"
+  required
+>
 
-    <button type="submit" id="submitBtn">Login</button>
+<button type="submit" id="submitBtn">
+Login
+</button>
 
-  </form>
+</form>
 
-  <div class="switch" id="switchText">
-    Don't have an account?
-    <span id="switchBtn">Sign Up</span>
-  </div>
+<div class="switch" id="switchText">
+Don't have an account?
+<span id="switchBtn">Sign Up</span>
+</div>
 
-  <button type="button" id="adminBtn">
-    Admin Login
-  </button>
+<button type="button" id="adminBtn">
+Admin Login
+</button>
 
-  <div id="accountInfo">
-    <h2>Welcome!</h2>
-    <p id="userEmail"></p>
-  </div>
+<div id="accountInfo">
+<h2>Welcome!</h2>
+<p id="userEmail"></p>
+</div>
 
-  <div id="adminPanel">
+<div id="adminPanel">
 
-    <h2>Admin Dashboard</h2>
-    <p style="text-align:center;color:#aaa;">
-      All Feedback Responses
-    </p>
+<h2>Feedback Responses</h2>
 
-    <div class="controls">
-      <input
-        type="text"
-        id="search"
-        placeholder="Search feedback..."
-      >
+<div class="controls">
 
-      <button type="button" id="refreshBtn">
-        Refresh
-      </button>
-    </div>
+<input
+  type="text"
+  id="search"
+  placeholder="Search feedback..."
+>
 
-    <p id="feedbackCount">Loading...</p>
+<button type="button" id="refreshBtn">
+Refresh
+</button>
 
-    <div id="feedbackList">
-      Loading feedback...
-    </div>
+</div>
 
-  </div>
+<p id="feedbackCount">Loading...</p>
 
-  <button type="button" id="logoutBtn" style="display:none;">
-    Logout
-  </button>
+<div id="feedbackList">
+Loading feedback...
+</div>
 
-  <button type="button" id="homeBtn"
-    onclick="window.location.href='index.html'">
-    Home
-  </button>
+</div>
+
+<button type="button" id="logoutBtn">
+Logout
+</button>
+
+<button type="button" id="homeBtn"
+onclick="window.location.href='index.html'">
+Home
+</button>
 
 </div>
 
@@ -207,24 +211,24 @@ button:disabled { opacity: .6; cursor: wait; }
 
 <script>
 
-// ====================================
+// ==================================
 // SUPABASE CONFIGURATION
-// ====================================
+// ==================================
 
 const SUPABASE_URL =
-  "https://wqnwdjhehbpekvwjadxr.supabase.co";
+"https://wqnwdjhehbpekvwjadxr.supabase.co";
 
 const SUPABASE_KEY =
-  "YOUR_SUPABASE_PUBLISHABLE_KEY";
+"YOUR_SUPABASE_PUBLISHABLE_KEY";
 
 const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+SUPABASE_URL,
+SUPABASE_KEY
 );
 
-// ====================================
+// ==================================
 // ELEMENTS
-// ====================================
+// ==================================
 
 const authForm = document.getElementById("authForm");
 const emailInput = document.getElementById("email");
@@ -232,408 +236,417 @@ const passwordInput = document.getElementById("password");
 
 const heading = document.getElementById("heading");
 const submitBtn = document.getElementById("submitBtn");
-const switchText = document.getElementById("switchText");
 
+const switchText = document.getElementById("switchText");
 const adminBtn = document.getElementById("adminBtn");
-const adminPanel = document.getElementById("adminPanel");
 
 const accountInfo = document.getElementById("accountInfo");
 const userEmail = document.getElementById("userEmail");
 
-const logoutBtn = document.getElementById("logoutBtn");
-
+const adminPanel = document.getElementById("adminPanel");
 const feedbackList = document.getElementById("feedbackList");
 const feedbackCount = document.getElementById("feedbackCount");
+
 const searchInput = document.getElementById("search");
 const refreshBtn = document.getElementById("refreshBtn");
 
+const logoutBtn = document.getElementById("logoutBtn");
 const notification = document.getElementById("notification");
 
 let isSignUp = false;
 let isAdminLogin = false;
 let notificationTimer;
 
-// ====================================
+// ==================================
 // NOTIFICATIONS
-// ====================================
+// ==================================
 
 function showNotification(message, success = true) {
-  notification.textContent = message;
-  notification.style.background =
-    success ? "#28a745" : "#dc3545";
 
-  notification.style.top = "20px";
+notification.textContent = message;
 
-  clearTimeout(notificationTimer);
+notification.style.background =
+success ? "#28a745" : "#dc3545";
 
-  notificationTimer = setTimeout(() => {
-    notification.style.top = "-100px";
-  }, 4000);
+notification.style.top = "20px";
+
+clearTimeout(notificationTimer);
+
+notificationTimer = setTimeout(() => {
+notification.style.top = "-100px";
+}, 3000);
+
 }
 
-// ====================================
-// LOGIN / SIGNUP MODE
-// ====================================
+// ==================================
+// LOGIN / SIGNUP SWITCH
+// ==================================
 
 function updateMode() {
 
-  heading.textContent = isAdminLogin
-    ? "Admin Login"
-    : isSignUp ? "Sign Up" : "Login";
+heading.textContent = isAdminLogin
+? "Admin Login"
+: isSignUp ? "Sign Up" : "Login";
 
-  submitBtn.textContent = isAdminLogin
-    ? "Admin Sign In"
-    : isSignUp ? "Create Account" : "Login";
+submitBtn.textContent = isAdminLogin
+? "Admin Login"
+: isSignUp ? "Create Account" : "Login";
 
-  switchText.style.display =
-    isAdminLogin ? "none" : "block";
+switchText.style.display =
+isAdminLogin ? "none" : "block";
 
-  switchText.replaceChildren();
+switchText.replaceChildren();
 
-  if (!isAdminLogin) {
+if (!isAdminLogin) {
 
-    switchText.append(
-      document.createTextNode(
-        isSignUp
-          ? "Already have an account? "
-          : "Don't have an account? "
-      )
-    );
+switchText.append(
+document.createTextNode(
+isSignUp
+? "Already have an account? "
+: "Don't have an account? "
+)
+);
 
-    const link = document.createElement("span");
+const link = document.createElement("span");
 
-    link.textContent = isSignUp ? "Login" : "Sign Up";
+link.textContent = isSignUp ? "Login" : "Sign Up";
 
-    link.addEventListener("click", () => {
-      isSignUp = !isSignUp;
-      updateMode();
-    });
+link.addEventListener("click", () => {
+isSignUp = !isSignUp;
+updateMode();
+});
 
-    switchText.appendChild(link);
-  }
+switchText.appendChild(link);
 
-  adminBtn.textContent = isAdminLogin
-    ? "Back to User Login"
-    : "Admin Login";
 }
 
-// ====================================
-// ADMIN MODE BUTTON
-// ====================================
+adminBtn.textContent = isAdminLogin
+? "Back to Login"
+: "Admin Login";
+
+}
+
+// ==================================
+// ADMIN LOGIN BUTTON
+// ==================================
 
 adminBtn.addEventListener("click", () => {
 
-  isAdminLogin = !isAdminLogin;
-  isSignUp = false;
+isAdminLogin = !isAdminLogin;
+isSignUp = false;
 
-  updateMode();
+updateMode();
 
 });
 
-// ====================================
-// USER INTERFACE
-// ====================================
-
-function updateUI(user) {
-
-  authForm.style.display = "none";
-  switchText.style.display = "none";
-  adminBtn.style.display = "none";
-  accountInfo.style.display = "none";
-  adminPanel.style.display = "none";
-  logoutBtn.style.display = "block";
-
-  if (!user) {
-
-    authForm.style.display = "block";
-    switchText.style.display = "block";
-    adminBtn.style.display = "block";
-    logoutBtn.style.display = "none";
-
-    isAdminLogin = false;
-    isSignUp = false;
-
-    updateMode();
-    return;
-  }
-
-  const isAdmin =
-    user.app_metadata?.role === "admin";
-
-  if (isAdmin) {
-
-    heading.textContent = "Admin Dashboard";
-    adminPanel.style.display = "block";
-    loadFeedback(searchInput.value);
-
-  } else {
-
-    heading.textContent = "Account";
-    accountInfo.style.display = "block";
-    userEmail.textContent = user.email || "";
-
-  }
-}
-
-// ====================================
-// LOGIN / SIGNUP
-// ====================================
+// ==================================
+// AUTHENTICATION
+// ==================================
 
 authForm.addEventListener("submit", async (e) => {
 
-  e.preventDefault();
+e.preventDefault();
 
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
+const email = emailInput.value.trim();
+const password = passwordInput.value;
 
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Please wait...";
+submitBtn.disabled = true;
+submitBtn.textContent = "Please wait...";
 
-  try {
+try {
 
-    if (isSignUp) {
+if (isSignUp) {
 
-      const { data, error } =
-        await supabaseClient.auth.signUp({
-          email,
-          password
-        });
+const { data, error } =
+await supabaseClient.auth.signUp({
+email,
+password
+});
 
-      if (error) throw error;
+if (error) throw error;
 
-      if (data.session) {
-        showNotification("Account created successfully!");
-      } else {
-        showNotification(
-          "Account created! Check your email to verify it."
-        );
-      }
+if (data.session) {
+showNotification("Account created successfully!");
+} else {
+showNotification(
+"Account created! Check your email to verify your account."
+);
+}
 
-    } else {
+} else {
 
-      const { data, error } =
-        await supabaseClient.auth.signInWithPassword({
-          email,
-          password
-        });
+const { data, error } =
+await supabaseClient.auth.signInWithPassword({
+email,
+password
+});
 
-      if (error) throw error;
+if (error) throw error;
 
-      const user = data.user;
+const user = data.user;
 
-      if (isAdminLogin) {
+if (isAdminLogin &&
+user.app_metadata?.role !== "admin") {
 
-        if (user.app_metadata?.role !== "admin") {
+await supabaseClient.auth.signOut();
 
-          await supabaseClient.auth.signOut();
+showNotification(
+"Access denied. Admin account required.",
+false
+);
 
-          showNotification(
-            "Access denied. You are not an administrator.",
-            false
-          );
+return;
 
-          return;
-        }
+}
 
-        showNotification("Admin login successful!");
+showNotification(
+isAdminLogin
+? "Admin login successful!"
+: "Login successful!"
+);
 
-      } else {
+updateUI(user);
 
-        showNotification("Login successful!");
+}
 
-      }
+} catch (error) {
 
-      updateUI(user);
+console.error(error);
+showNotification(error.message, false);
 
-    }
+} finally {
 
-  } catch (error) {
+submitBtn.disabled = false;
+updateMode();
 
-    console.error("Authentication error:", error);
-    showNotification(error.message, false);
-
-  } finally {
-
-    submitBtn.disabled = false;
-    updateMode();
-
-  }
+}
 
 });
 
-// ====================================
-// LOAD ALL FEEDBACK
-// ====================================
+// ==================================
+// UPDATE USER INTERFACE
+// ==================================
+
+function updateUI(user) {
+
+authForm.style.display = "none";
+switchText.style.display = "none";
+adminBtn.style.display = "none";
+
+accountInfo.style.display = "none";
+adminPanel.style.display = "none";
+
+logoutBtn.style.display = user ? "block" : "none";
+
+if (!user) {
+
+authForm.style.display = "block";
+switchText.style.display = "block";
+adminBtn.style.display = "block";
+
+isAdminLogin = false;
+isSignUp = false;
+
+updateMode();
+
+return;
+
+}
+
+const isAdmin =
+user.app_metadata?.role === "admin";
+
+if (isAdmin) {
+
+heading.textContent = "Admin Dashboard";
+adminPanel.style.display = "block";
+
+loadFeedback(searchInput.value);
+
+} else {
+
+heading.textContent = "Account";
+accountInfo.style.display = "block";
+
+userEmail.textContent = user.email || "";
+
+}
+
+}
+
+// ==================================
+// LOAD FEEDBACK ANSWERS
+// ==================================
 
 async function loadFeedback(filter = "") {
 
-  feedbackList.textContent = "Loading feedback...";
-  feedbackCount.textContent = "Loading...";
+feedbackList.textContent = "Loading feedback...";
+feedbackCount.textContent = "Loading...";
 
-  try {
+try {
 
-    // Verify the actual authenticated user
-    const { data: authData, error: authError } =
-      await supabaseClient.auth.getUser();
+const { data: authData, error: authError } =
+await supabaseClient.auth.getUser();
 
-    if (authError) throw authError;
+if (authError) throw authError;
 
-    const user = authData.user;
+const user = authData.user;
 
-    if (!user || user.app_metadata?.role !== "admin") {
-      throw new Error("Admin permission required.");
-    }
+if (!user || user.app_metadata?.role !== "admin") {
+throw new Error("Admin access required.");
+}
 
-    const { data, error } = await supabaseClient
-      .from("feedback")
-      .select("*")
-      .order("created_at", { ascending: false });
+const { data, error } = await supabaseClient
+.from("feedback")
+.select("*")
+.order("created_at", { ascending: false });
 
-    if (error) throw error;
+if (error) throw error;
 
-    const query = filter.toLowerCase();
+const query = filter.toLowerCase();
 
-    const filtered = (data || []).filter(item =>
-      String(item.name || "").toLowerCase().includes(query) ||
-      String(item.message || "").toLowerCase().includes(query)
-    );
+const filtered = (data || []).filter(item =>
 
-    feedbackCount.textContent =
-      `Showing ${filtered.length} of ${(data || []).length} responses`;
+String(item.name || "").toLowerCase().includes(query) ||
+String(item.message || "").toLowerCase().includes(query)
 
-    feedbackList.replaceChildren();
+);
 
-    if (filtered.length === 0) {
+feedbackCount.textContent =
+`Showing ${filtered.length} of ${data.length} responses`;
 
-      feedbackList.textContent = "No feedback found.";
-      return;
+feedbackList.replaceChildren();
 
-    }
+if (!filtered.length) {
 
-    filtered.forEach(item => {
-
-      const div = document.createElement("div");
-      div.className = "feedback-item";
-
-      const title = document.createElement("strong");
-      title.textContent = item.name || "Anonymous";
-
-      const answer = document.createElement("p");
-      answer.textContent = item.message || "";
-
-      const date = document.createElement("small");
-      date.textContent = item.created_at
-        ? new Date(item.created_at).toLocaleString()
-        : "Date unavailable";
-
-      div.append(title, answer, date);
-      feedbackList.appendChild(div);
-
-    });
-
-  } catch (error) {
-
-    console.error("Feedback error:", error);
-
-    feedbackCount.textContent = "Unable to load responses.";
-
-    feedbackList.textContent = error.message;
-
-  }
+feedbackList.textContent = "No feedback found.";
+return;
 
 }
 
-// ====================================
+filtered.forEach(item => {
+
+const div = document.createElement("div");
+div.className = "feedback-item";
+
+const name = document.createElement("strong");
+name.textContent = item.name || "Anonymous";
+
+const answer = document.createElement("p");
+answer.textContent = item.message || "";
+
+const date = document.createElement("small");
+
+date.textContent = item.created_at
+? new Date(item.created_at).toLocaleString()
+: "Date unavailable";
+
+div.append(name, answer, date);
+
+feedbackList.appendChild(div);
+
+});
+
+} catch (error) {
+
+console.error(error);
+
+feedbackCount.textContent = "Error loading feedback";
+
+feedbackList.textContent = error.message;
+
+}
+
+}
+
+// ==================================
 // SEARCH
-// ====================================
+// ==================================
 
 searchInput.addEventListener("input", () => {
-  loadFeedback(searchInput.value);
+loadFeedback(searchInput.value);
 });
 
-// ====================================
+// ==================================
 // REFRESH
-// ====================================
+// ==================================
 
-refreshBtn.addEventListener("click", async () => {
-
-  refreshBtn.disabled = true;
-
-  await loadFeedback(searchInput.value);
-
-  refreshBtn.disabled = false;
-
+refreshBtn.addEventListener("click", () => {
+loadFeedback(searchInput.value);
 });
 
-// ====================================
+// ==================================
 // LOGOUT
-// ====================================
+// ==================================
 
 logoutBtn.addEventListener("click", async () => {
 
-  logoutBtn.disabled = true;
+logoutBtn.disabled = true;
 
-  try {
+try {
 
-    const { error } = await supabaseClient.auth.signOut();
+const { error } =
+await supabaseClient.auth.signOut();
 
-    if (error) throw error;
+if (error) throw error;
 
-    showNotification("Logged out successfully!");
+showNotification("Logged out successfully!");
 
-    updateUI(null);
+updateUI(null);
 
-  } catch (error) {
+} catch (error) {
 
-    showNotification(error.message, false);
+showNotification(error.message, false);
 
-  } finally {
+} finally {
 
-    logoutBtn.disabled = false;
-
-  }
-
-});
-
-// ====================================
-// RESTORE SESSION
-// ====================================
-
-async function checkSession() {
-
-  try {
-
-    const { data, error } =
-      await supabaseClient.auth.getSession();
-
-    if (error) throw error;
-
-    updateUI(data.session?.user || null);
-
-  } catch (error) {
-
-    console.error(error);
-
-    showNotification(
-      "Could not connect to Supabase. Check your URL and API key.",
-      false
-    );
-
-  }
+logoutBtn.disabled = false;
 
 }
 
-// ====================================
+});
+
+// ==================================
+// CHECK SESSION
+// ==================================
+
+async function checkSession() {
+
+try {
+
+const { data, error } =
+await supabaseClient.auth.getSession();
+
+if (error) throw error;
+
+updateUI(data.session?.user || null);
+
+} catch (error) {
+
+console.error(error);
+
+showNotification(
+"Unable to connect. Check your Supabase URL and key.",
+false
+);
+
+}
+
+}
+
+// ==================================
 // AUTH STATE CHANGES
-// ====================================
+// ==================================
 
 supabaseClient.auth.onAuthStateChange(
-  (_event, session) => {
-
-    updateUI(session?.user || null);
-
-  }
+(_event, session) => {
+updateUI(session?.user || null);
+}
 );
+
+// ==================================
+// START
+// ==================================
 
 checkSession();
 
