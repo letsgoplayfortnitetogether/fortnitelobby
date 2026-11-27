@@ -1,0 +1,700 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Savnac</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --blue: #638cff;
+  --purple: #a16aff;
+  --bg: #080b14;
+  --panel: rgba(20,27,47,.75);
+  --muted: #a0abc2;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: white;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image: radial-gradient(rgba(130,155,255,.2) 1px, transparent 1px);
+  background-size: 35px 35px;
+}
+
+.glow {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  filter: blur(130px);
+  opacity: .18;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.glow1 {
+  background: #416aff;
+  top: 0;
+  left: -180px;
+}
+
+.glow2 {
+  background: #a14aff;
+  right: -180px;
+  top: 40%;
+}
+
+/* NAVIGATION */
+
+nav {
+  max-width: 1150px;
+  margin: auto;
+  padding: 23px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.logo span {
+  color: var(--blue);
+}
+
+.nav-links {
+  display: flex;
+  gap: 12px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #c4cce0;
+  font-weight: 800;
+  font-size: 14px;
+  padding: 10px 17px;
+  border-radius: 10px;
+  transition: .25s;
+}
+
+.nav-links a:hover {
+  background: rgba(255,255,255,.08);
+  color: white;
+}
+
+/* HERO */
+
+.hero {
+  text-align: center;
+  padding: 110px 20px 115px;
+  max-width: 950px;
+  margin: auto;
+}
+
+.tag {
+  display: inline-block;
+  padding: 9px 17px;
+  border-radius: 30px;
+  border: 1px solid rgba(100,140,255,.3);
+  background: rgba(75,110,255,.1);
+  color: #a6bcff;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin-bottom: 27px;
+}
+
+.hero h1 {
+  font-size: clamp(48px, 9vw, 88px);
+  line-height: 1.08;
+  letter-spacing: -4px;
+  font-weight: 900;
+}
+
+.gradient {
+  background: linear-gradient(100deg,#76a3ff,#a47aff,#df92ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero p {
+  max-width: 650px;
+  margin: 25px auto 0;
+  font-size: 18px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 35px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 900;
+  text-decoration: none;
+  transition: .25s;
+}
+
+.btn-primary {
+  background: linear-gradient(110deg,#557fff,#9561ff);
+  color: white;
+  box-shadow: 0 8px 30px rgba(90,100,255,.25);
+}
+
+.btn-secondary {
+  color: white;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.05);
+}
+
+.btn:hover {
+  transform: translateY(-4px);
+}
+
+/* SECTION */
+
+section {
+  max-width: 1100px;
+  margin: auto;
+  padding: 75px 25px;
+}
+
+.section-tag {
+  color: #8caaff;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin-bottom: 13px;
+  text-transform: uppercase;
+}
+
+.section-heading {
+  font-size: clamp(30px,5vw,43px);
+  font-weight: 900;
+  letter-spacing: -1px;
+  margin-bottom: 18px;
+}
+
+.section-description {
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 680px;
+  font-size: 15px;
+}
+
+/* STORY */
+
+.story-layout {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 45px;
+  align-items: center;
+}
+
+.story-box {
+  background: linear-gradient(145deg,rgba(50,76,145,.25),rgba(35,24,75,.3));
+  border: 1px solid rgba(120,145,255,.17);
+  border-radius: 25px;
+  padding: 35px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+
+.story-box h3 {
+  font-size: 24px;
+  margin-bottom: 17px;
+}
+
+.story-box p {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.9;
+  margin-bottom: 14px;
+}
+
+.story-visual {
+  min-height: 310px;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background:
+    radial-gradient(circle at 50% 45%,rgba(90,125,255,.3),transparent 55%),
+    rgba(20,27,47,.8);
+  border: 1px solid rgba(130,155,255,.18);
+  overflow: hidden;
+}
+
+.big-logo {
+  font-size: clamp(65px,10vw,110px);
+  font-weight: 900;
+  letter-spacing: -7px;
+  background: linear-gradient(120deg,#75a0ff,#ad77ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 60px rgba(100,120,255,.1);
+}
+
+.story-visual p {
+  color: #8b9bc1;
+  letter-spacing: 4px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+/* MISSION */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 18px;
+  margin-top: 35px;
+}
+
+.card {
+  padding: 27px;
+  border-radius: 20px;
+  background: var(--panel);
+  border: 1px solid rgba(140,160,255,.13);
+  transition: .3s;
+}
+
+.card:hover {
+  transform: translateY(-7px);
+  border-color: rgba(120,150,255,.45);
+  background: rgba(31,40,69,.85);
+}
+
+.card-icon {
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+
+.card h3 {
+  font-size: 19px;
+  font-weight: 900;
+  margin-bottom: 11px;
+}
+
+.card p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+/* FEATURES */
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.feature {
+  display: flex;
+  gap: 17px;
+  align-items: flex-start;
+  padding: 23px;
+  border-radius: 17px;
+  background: rgba(20,27,47,.7);
+  border: 1px solid rgba(140,160,255,.1);
+  transition: .25s;
+}
+
+.feature:hover {
+  border-color: rgba(110,140,255,.4);
+  transform: translateY(-3px);
+}
+
+.feature-icon {
+  font-size: 25px;
+}
+
+.feature h3 {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.feature p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* CTA */
+
+.cta {
+  margin: 55px auto 90px;
+  max-width: 1050px;
+  padding: 65px 25px;
+  text-align: center;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 15% 20%,rgba(75,120,255,.25),transparent 45%),
+    radial-gradient(circle at 85% 80%,rgba(160,80,255,.2),transparent 45%),
+    rgba(23,30,52,.8);
+  border: 1px solid rgba(135,155,255,.2);
+}
+
+.cta h2 {
+  font-size: clamp(30px,5vw,45px);
+  font-weight: 900;
+  margin-bottom: 13px;
+}
+
+.cta p {
+  color: var(--muted);
+  margin-bottom: 28px;
+  line-height: 1.8;
+}
+
+/* FOOTER */
+
+footer {
+  border-top: 1px solid rgba(140,160,255,.12);
+  padding: 30px 20px;
+  text-align: center;
+  color: #7987a3;
+  font-size: 13px;
+}
+
+footer a {
+  color: #9ab2ff;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+footer a:hover {
+  color: white;
+}
+
+/* ANIMATIONS */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero, .story-box, .story-visual {
+  animation: fadeUp .8s ease both;
+}
+
+/* MOBILE */
+
+@media(max-width:750px) {
+  .story-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding-top: 75px;
+  }
+
+  .hero h1 {
+    letter-spacing: -2px;
+  }
+
+  .nav-links {
+    gap: 0;
+  }
+
+  .nav-links a {
+    padding: 9px;
+    font-size: 12px;
+  }
+
+  .cta {
+    margin: 30px 15px 60px;
+  }
+}
+
+@media(max-width:420px) {
+  nav {
+    padding: 18px 14px;
+  }
+
+  .logo {
+    font-size: 20px;
+  }
+
+  .nav-links a {
+    font-size: 11px;
+    padding: 8px;
+  }
+
+  .story-box {
+    padding: 24px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="glow glow1"></div>
+<div class="glow glow2"></div>
+
+<!-- NAVIGATION -->
+
+<nav>
+  <div class="logo">SAVNAC<span>.</span></div>
+
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="chat.html">Chat</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+
+<div class="hero">
+
+  <div class="tag">✦ GET TO KNOW US</div>
+
+  <h1>
+    More Than Just<br>
+    <span class="gradient">A Website.</span>
+  </h1>
+
+  <p>
+    Welcome to Savnac. A place built around creativity,
+    technology, entertainment, and bringing people together.
+    We're here to make the internet a little more interesting.
+  </p>
+
+  <div class="hero-buttons">
+    <a href="index.html" class="btn btn-primary">Explore Savnac →</a>
+    <a href="chat.html" class="btn btn-secondary">Join Our Community</a>
+  </div>
+
+</div>
+
+<!-- OUR STORY -->
+
+<section>
+
+  <div class="story-layout">
+
+    <div class="story-box">
+      <div class="section-tag">OUR STORY</div>
+
+      <h2 class="section-heading">What is Savnac?</h2>
+
+      <p>
+        Savnac is a growing online project focused on creating
+        an enjoyable digital experience. It's a place where
+        different ideas, tools, and entertainment can come together.
+      </p>
+
+      <p>
+        We believe websites should be more than just pages
+        on a screen. They should be interesting, easy to use,
+        and something people actually enjoy visiting.
+      </p>
+
+      <p>
+        That's what we're working toward with Savnac:
+        a platform that keeps growing, improving, and
+        bringing new experiences to the internet.
+      </p>
+    </div>
+
+    <div class="story-visual">
+      <div class="big-logo">S.</div>
+      <p>BUILT DIFFERENT.</p>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- MISSION -->
+
+<section>
+
+  <div class="section-tag">WHAT WE STAND FOR</div>
+  <h2 class="section-heading">Our Mission & Vision</h2>
+
+  <p class="section-description">
+    Everything we create comes back to making the online
+    experience better, more creative, and more enjoyable.
+  </p>
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-icon">🚀</div>
+      <h3>Our Mission</h3>
+      <p>
+        Build useful, creative, and entertaining digital
+        experiences that people enjoy coming back to.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🌎</div>
+      <h3>Our Vision</h3>
+      <p>
+        Continue growing Savnac into a recognizable
+        destination for online entertainment and creativity.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">💡</div>
+      <h3>Our Approach</h3>
+      <p>
+        Keep experimenting, listening to feedback,
+        improving our projects, and trying new ideas.
+      </p>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- WHAT WE OFFER -->
+
+<section>
+
+  <div class="section-tag">THE SAVNAC EXPERIENCE</div>
+  <h2 class="section-heading">What You'll Find Here</h2>
+
+  <p class="section-description">
+    We're building different experiences under one name.
+    Here's what makes up the Savnac experience.
+  </p>
+
+  <div class="features">
+
+    <div class="feature">
+      <div class="feature-icon">🎮</div>
+      <div>
+        <h3>Entertainment</h3>
+        <p>Fun digital experiences and places to discover something new.</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">📺</div>
+      <div>
+        <h3>Media</h3>
+        <p>Tools and experiences designed around online media and videos.</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">💬</div>
+      <div>
+        <h3>Community</h3>
+        <p>A place to connect, share ideas, and interact with others.</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">⚡</div>
+      <div>
+        <h3>Innovation</h3>
+        <p>New ideas, improvements, and projects as Savnac continues to grow.</p>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- COMMUNITY CTA -->
+
+<div class="cta">
+
+  <div class="section-tag">BE PART OF IT</div>
+
+  <h2>Welcome to <span class="gradient">Savnac.</span></h2>
+
+  <p>
+    The journey doesn't stop here. Explore what we're creating
+    and become part of the community.
+  </p>
+
+  <a href="chat.html" class="btn btn-primary">
+    Join the Chat →
+  </a>
+
+</div>
+
+<!-- FOOTER -->
+
+<footer>
+
+  <p>
+    Made with 💙 by
+    <a href="https://letsgoplayfortnitetogether.github.io/fortnitelobby/aboutus.html" target="_blank" rel="noopener">
+      The Savnac Team
+    </a>
+  </p>
+
+  <p style="margin-top:10px">
+    <a href="index.html">Home</a>
+    &nbsp;·&nbsp;
+    <a href="chat.html">Community Chat</a>
+  </p>
+
+  <p style="margin-top:15px;font-size:11px">
+    © Savnac. All rights reserved.
+  </p>
+
+</footer>
+
+</body>
+</html>
