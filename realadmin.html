@@ -1,0 +1,532 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canvas | Resources</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --gold: #ffd700;
+    --gold2: #ffb700;
+    --bg: #08090d;
+    --card: rgba(24,25,33,.88);
+    --muted: #9699a8;
+}
+
+body {
+    min-height: 100vh;
+    padding: 35px;
+    font-family: 'Inter', Arial, sans-serif;
+    color: white;
+    background:
+        radial-gradient(ellipse at 15% 10%, rgba(255,215,0,.10), transparent 35%),
+        radial-gradient(ellipse at 85% 90%, rgba(255,170,0,.08), transparent 35%),
+        var(--bg);
+    overflow-x: hidden;
+}
+
+/* Background decoration */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: .12;
+    background-image: radial-gradient(#ffffff 1px, transparent 1px);
+    background-size: 35px 35px;
+}
+
+header {
+    position: relative;
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeDown .8s ease;
+}
+
+.logo {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 5px;
+    color: var(--gold);
+    margin-bottom: 15px;
+}
+
+header h1 {
+    font-size: clamp(35px, 6vw, 60px);
+    font-weight: 900;
+    letter-spacing: -3px;
+    background: linear-gradient(90deg,#fff,var(--gold),#fff);
+    background-size: 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine 5s linear infinite;
+}
+
+header p {
+    color: var(--muted);
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.header-line {
+    width: 80px;
+    height: 3px;
+    margin: 20px auto 0;
+    border-radius: 10px;
+    background: var(--gold);
+    box-shadow: 0 0 18px var(--gold);
+}
+
+.container {
+    max-width: 1450px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    position: relative;
+}
+
+.box {
+    position: relative;
+    overflow: hidden;
+    background: var(--card);
+    border: 1px solid rgba(255,215,0,.22);
+    border-radius: 20px;
+    padding: 27px;
+    min-width: 0;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 12px 40px rgba(0,0,0,.3);
+    transition: .35s ease;
+    animation: fadeUp .7s ease both;
+}
+
+.box:nth-child(2) { animation-delay: .1s; }
+.box:nth-child(3) { animation-delay: .2s; }
+.box:nth-child(4) { animation-delay: .3s; }
+
+.box::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg,transparent,var(--gold),transparent);
+    opacity: .7;
+}
+
+.box:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255,215,0,.7);
+    box-shadow: 0 18px 45px rgba(255,215,0,.09);
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    font-size: 21px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.title-icon {
+    width: 39px;
+    height: 39px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: rgba(255,215,0,.12);
+    color: var(--gold);
+    font-size: 19px;
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+    margin: 13px 0 17px;
+}
+
+.separator {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(90deg,var(--gold),transparent);
+    opacity: .45;
+    margin: 17px 0;
+}
+
+a {
+    color: #e8e8ed;
+    text-decoration: none;
+    transition: .25s;
+}
+
+/* Home button */
+.home-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 19px;
+    border-radius: 10px;
+    background: linear-gradient(135deg,var(--gold),var(--gold2));
+    color: #111;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    box-shadow: 0 5px 18px rgba(255,215,0,.2);
+}
+
+.home-btn:hover {
+    transform: scale(1.04);
+    box-shadow: 0 5px 25px rgba(255,215,0,.4);
+    text-decoration: none;
+}
+
+/* Game links */
+.link-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.link-grid a {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.035);
+    border: 1px solid rgba(255,255,255,.07);
+    font-size: 12px;
+    font-weight: 600;
+    transition: .25s ease;
+}
+
+.link-grid a::before {
+    content: "↗";
+    color: var(--gold);
+    font-size: 15px;
+    margin-right: 9px;
+}
+
+.link-grid a:hover {
+    background: rgba(255,215,0,.1);
+    border-color: rgba(255,215,0,.45);
+    color: var(--gold);
+    transform: translateX(3px);
+}
+
+/* Password links */
+.password-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    margin: 10px 0;
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 11px;
+    background: rgba(255,255,255,.035);
+    font-size: 13px;
+    transition: .25s;
+}
+
+.password-link:hover {
+    border-color: var(--gold);
+    background: rgba(255,215,0,.07);
+}
+
+.password-link span {
+    color: var(--gold);
+    font-weight: 700;
+}
+
+/* Counter */
+.counter-info {
+    padding: 14px;
+    margin: 13px 0;
+    border-radius: 11px;
+    background: rgba(255,255,255,.035);
+    border: 1px solid rgba(255,255,255,.07);
+}
+
+.counter-info p {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+    margin-bottom: 10px;
+}
+
+.counter-info strong {
+    color: var(--gold);
+}
+
+.counter-info script {
+    display: block;
+}
+
+/* Instructions */
+.instructions {
+    color: #c3c4cd;
+    font-size: 13px;
+    line-height: 2;
+}
+
+.instructions strong {
+    color: var(--gold);
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    margin: 13px 0;
+}
+
+.step-number {
+    flex-shrink: 0;
+    width: 27px;
+    height: 27px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: rgba(255,215,0,.13);
+    color: var(--gold);
+    font-size: 12px;
+    font-weight: 900;
+}
+
+footer {
+    text-align: center;
+    padding: 35px 10px 10px;
+    color: #696b77;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shine {
+    to { background-position: 200% center; }
+}
+
+@media(max-width: 800px) {
+    body { padding: 20px 13px; }
+
+    .container {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    header { margin-bottom: 28px; }
+
+    header h1 { letter-spacing: -2px; }
+
+    .box { padding: 21px; }
+}
+
+@media(max-width: 420px) {
+    .link-grid { grid-template-columns: 1fr; }
+    .title { font-size: 18px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">CANVAS NETWORK</div>
+    <h1>Resources Hub</h1>
+    <p>Everything you need, all in one place.</p>
+    <div class="header-line"></div>
+</header>
+
+<main class="container">
+
+    <!-- GAMES -->
+    <section class="box">
+        <div class="title">
+            <div class="title-icon">🎮</div>
+            Links For Games
+        </div>
+
+        <div class="separator"></div>
+
+        <p class="subtitle">Explore these game websites and discover something new.</p>
+
+        <a href="index.html" class="home-btn">⌂ &nbsp; GO HOME</a>
+
+        <div class="link-grid">
+            <a href="https://monkeygg2.github.io/">MonkeyGG2</a>
+            <a href="https://nintendoboi22.github.io/">Nintendoboi22</a>
+            <a href="https://incrediblewebsite.github.io/">Chromebooks Are Racist</a>
+            <a href="https://ballbangonline.github.io/">BallBangOnline</a>
+            <a href="https://io-games-2025.github.io/">Io Games Unblocked 2025</a>
+            <a href="https://moto-x3m-10x.github.io/">Moto X3M 10x</a>
+            <a href="https://retro-bowl-76-77.github.io/">Retro Bowl</a>
+            <a href="https://sz-games.github.io/">Sz Games</a>
+            <a href="https://monstertracks.github.io/">Monster Tracks</a>
+            <a href="https://gameunblocked-2025.github.io/">All Games</a>
+            <a href="https://geography-lessons.github.io/">Geography Lessons</a>
+            <a href="https://azgames.io/">Az Games</a>
+            <a href="https://iogames.onl/">Io Games</a>
+        </div>
+    </section>
+
+    <!-- PASSWORDS -->
+    <section class="box">
+        <div class="title">
+            <div class="title-icon">🔐</div>
+            Passwords
+        </div>
+
+        <div class="separator"></div>
+
+        <p class="subtitle">Access information for Canvas features.</p>
+
+        <a class="password-link" href="/chat.html" target="_blank">
+            Private Chat
+            <span>sanvaclive</span>
+        </a>
+
+        <a class="password-link" href="/sign-in" target="_blank">
+            Admin Login
+            <span>savnacsigma</span>
+        </a>
+
+        <a class="password-link" href="/admin" target="_blank">
+            Guess the 4-digit password
+            <span>6741</span>
+        </a>
+    </section>
+
+    <!-- COUNTERS -->
+    <section class="box">
+        <div class="title">
+            <div class="title-icon">📊</div>
+            Stat Counter
+        </div>
+
+        <div class="separator"></div>
+
+        <p class="subtitle">Track visits and see how many people are using Canvas.</p>
+
+        <div class="counter-info">
+            <p><strong>Unique Visitors</strong><br>
+            See how many individual visitors have visited Canvas.</p>
+
+            <script type="text/javascript" src="https://counter.websiteout.com/js/22/0/50/1"></script>
+        </div>
+
+        <div class="counter-info">
+            <p><strong>Total Page Views</strong><br>
+            Counts all visits, including page refreshes. This is also the counter used on the home page.</p>
+
+            <script type="text/javascript" src="https://counter.websiteout.com/js/2/5/1473/0"></script>
+        </div>
+
+        <p class="subtitle">
+            Counter service:
+            <a href="https://www.websiteout.net/counter.php" target="_blank" style="color:var(--gold)">
+                WebsiteOut.net ↗
+            </a>
+        </p>
+    </section>
+
+    <!-- ADD GAMES -->
+    <section class="box">
+        <div class="title">
+            <div class="title-icon">🛠️</div>
+            How to Add a Game
+        </div>
+
+        <div class="separator"></div>
+
+        <p class="subtitle">Want to contribute to Canvas? Follow this guide.</p>
+
+        <div class="instructions">
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div>
+                    <strong>Create a GitHub account.</strong><br>
+                    Make an account on GitHub to get started.
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div>
+                    <strong>Get editing permission.</strong><br>
+                    Talk to the Canvas owner to get permission to edit files.
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div>
+                    <strong>Find a game file.</strong><br>
+                    Choose an existing game file to use as a template. Games such as 1v1.lol, Granny, or games with 360-degree movement may need extra code, so ask the owner to add those.
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div>
+                    <strong>Create a new HTML file.</strong><br>
+                    Name it after your game, for example: <strong>mygame.html</strong>.
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">5</div>
+                <div>
+                    <strong>Paste and customize.</strong><br>
+                    Paste the game code into your new file and change the URL to the game you want.
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">6</div>
+                <div>
+                    <strong>You're done!</strong><br>
+                    Tell the Canvas owner you've added the game so it can be added to the search bar.
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    CANVAS NETWORK &nbsp; • &nbsp; ALL RIGHTS RESERVED
+</footer>
+
+</body>
+</html>
