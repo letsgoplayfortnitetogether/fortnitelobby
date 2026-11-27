@@ -2,230 +2,315 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Canvas</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #121212;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 700px;
-      width: 100%;
-      background: #1e1e1e;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    }
-    h1 { text-align: center; }
-    input, textarea, button {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 8px;
-      border: 1px solid #333;
-      background: #222;
-      color: white;
-      font-size: 16px;
-      box-sizing: border-box;
-    }
-    textarea {
-      height: 40px;
-      resize: none;
-      overflow-y: hidden;
-    }
-    button {
-      background: #007bff;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover { background: #0056b3; }
-    #notification {
-      position: fixed;
-      top: -60px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #28a745;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-weight: bold;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-      transition: top 0.4s ease;
-      z-index: 1000;
-    }
-    #adminPanel {
-      margin-top: 20px;
-      display: none;
-      background: #2a2a2a;
-      padding: 15px;
-      border-radius: 10px;
-    }
-    .feedback-item {
-      border-bottom: 1px solid #444;
-      padding: 8px 0;
-    }
-    .feedback-item:last-child { border-bottom: none; }
-    .controls {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canvas | Account</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;padding:25px 15px;min-height:100vh;
+  display:flex;justify-content:center;align-items:flex-start;
+  font-family:Arial,sans-serif;color:white;
+  background:radial-gradient(circle at top left,#172c58,#080d1a 55%,#170e35);
+}
+.container{
+  width:100%;max-width:720px;padding:30px;
+  background:rgba(20,29,51,.92);
+  border:1px solid #ffffff18;border-radius:22px;
+  box-shadow:0 20px 60px #0008;
+  backdrop-filter:blur(15px);
+}
+h1{text-align:center;font-size:32px}
+h2{margin-top:0}
+.subtitle{text-align:center;color:#9eacc7;margin-bottom:25px}
+.glow{
+  width:55px;height:4px;margin:0 auto 20px;
+  border-radius:10px;background:linear-gradient(90deg,#438cff,#a16bff);
+}
+label{display:block;color:#9eacc7;font-size:12px;margin-top:13px}
+input,select,button{
+  width:100%;padding:14px;margin:8px 0;
+  border-radius:10px;font-size:15px;
+}
+input,select{
+  background:#0b1428;color:white;
+  border:1px solid #ffffff20;outline:none;
+}
+input:focus,select:focus{border-color:#438cff}
+button{
+  border:0;background:linear-gradient(110deg,#357eff,#8055ef);
+  color:white;font-weight:bold;cursor:pointer;
+  transition:.2s;
+}
+button:hover{transform:translateY(-2px);filter:brightness(1.15)}
+button:disabled{opacity:.5;cursor:wait}
+.secondary{
+  background:#ffffff10;border:1px solid #ffffff20;
+}
+#adminBtn{
+  background:#8055ef20;border:1px solid #8055ef66;
+}
+#adminPanel{
+  display:none;margin-top:25px;padding:20px;
+  border-radius:15px;background:#080f20;
+  border:1px solid #ffffff18;
+}
+.controls{display:flex;gap:10px}
+.controls input{flex:1;min-width:0}
+.controls button{width:110px}
+.feedback-item{
+  padding:15px;margin:12px 0;
+  background:#ffffff08;border:1px solid #ffffff18;
+  border-radius:12px;overflow-wrap:anywhere;
+}
+.feedback-item strong{color:#82b3ff}
+.feedback-item p{white-space:pre-wrap;line-height:1.5}
+.feedback-item small{color:#91a0bb}
+.empty{text-align:center;color:#91a0bb;padding:25px}
+#notification{
+  position:fixed;top:-100px;left:50%;
+  transform:translateX(-50%);
+  padding:14px 20px;border-radius:10px;
+  background:#16865b;color:white;
+  z-index:1000;transition:top .35s;
+  max-width:90%;overflow-wrap:anywhere;
+}
+#notification.error{background:#c83c50}
+.footer{text-align:center;color:#71809c;font-size:12px;margin-top:25px}
+@media(max-width:500px){
+  .container{padding:22px 16px}
+  .controls{flex-direction:column}
+  .controls button{width:100%}
+}
+</style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>Login / Sign Up</h1>
-    <form id="feedbackForm">
-      <input type="text" id="name" placeholder="Your Email (sign in with your current account)" required>
-      <input type="password" id="message" placeholder="Password" required>
-      <button type="submit">Sign in / Sign up</button>
-      <button type="button" onclick="window.location.href='index.html'">Home</button>
-    </form>
+<div class="container">
 
-    <button id="adminBtn" type="button" style="margin-top: 10px;">Admin Login</button>
+<div class="glow"></div>
+<h1>Welcome to Canvas</h1>
+<p class="subtitle">Sign in or create your account to continue.</p>
 
-    <div id="adminPanel">
-      <h2>Feedback Responses</h2>
-      <div class="controls">
-        <input type="text" id="search" placeholder="Search feedback...">
-        <button type="button" id="refreshBtn">Refresh</button>
-      </div>
-      <div id="feedbackList">Loading...</div>
-    </div>
-  </div>
+<form id="feedbackForm">
 
-  <div id="notification"></div>
+<label>Sign in or if you don't have an account create one!</label>
+<select id="authMode">
+<option value="signin">Sign In</option>
+<option value="signup">Create Account</option>
+</select>
 
-  <script>
-    const SUPABASE_URL = "https://wqnwdjhehbpekvwjadxr.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ3cW53ZGpoZWhicGVrdndqYWR4ciIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzU4MjQzMDg2LCJleHAiOjIwNzM4MTkwODZ9.npkPoVq08u8WHu05wzj5J3mZ_-1gUxsErQ4xqMtHths";
+<label>Email address</label>
+<input type="email" id="name" placeholder="Your email" required>
 
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+<label>Password</label>
+<input type="password" id="message" placeholder="Your password" minlength="6" required>
 
-    const form = document.getElementById('feedbackForm');
-    const nameInput = document.getElementById('name');
-    const messageInput = document.getElementById('message');
-    const notification = document.getElementById('notification');
-    const adminBtn = document.getElementById('adminBtn');
-    const adminPanel = document.getElementById('adminPanel');
-    const feedbackList = document.getElementById('feedbackList');
-    const searchInput = document.getElementById('search');
-    const refreshBtn = document.getElementById('refreshBtn');
+<button type="submit" id="submitBtn">Sign in / Sign up</button>
+<button type="button" class="secondary" onclick="location.href='index.html'">Home</button>
 
-    function showNotification(message, success = true) {
-      notification.textContent = message;
-      notification.style.background = success ? '#28a745' : '#dc3545';
-      notification.style.top = '20px';
-      setTimeout(() => {
-        notification.style.top = '-60px';
-      }, 3000);
+</form>
+
+<button id="adminBtn">Admin Login</button>
+
+<div id="adminPanel">
+<h2>Feedback Responses</h2>
+
+<div class="controls">
+<input type="text" id="search" placeholder="Search feedback...">
+<button id="refreshBtn" type="button">Refresh</button>
+</div>
+
+<div id="feedbackList">
+<div class="empty">Loading feedback...</div>
+</div>
+</div>
+
+<div class="footer">Canvas Account System</div>
+</div>
+
+<div id="notification"></div>
+
+<script>
+const ADMIN_PASSWORD = "savnacsigma";
+
+const form = document.getElementById("feedbackForm");
+const nameInput = document.getElementById("name");
+const passwordInput = document.getElementById("message");
+const authMode = document.getElementById("authMode");
+const submitBtn = document.getElementById("submitBtn");
+const adminBtn = document.getElementById("adminBtn");
+const adminPanel = document.getElementById("adminPanel");
+const feedbackList = document.getElementById("feedbackList");
+const searchInput = document.getElementById("search");
+const refreshBtn = document.getElementById("refreshBtn");
+const notification = document.getElementById("notification");
+
+function getData(key, fallback = []) {
+  try {
+    return JSON.parse(localStorage.getItem(key)) || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function saveData(key, data) {
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+function notify(message, success = true) {
+  notification.textContent = message;
+  notification.classList.toggle("error", !success);
+  notification.style.top = "20px";
+
+  clearTimeout(window.notifyTimer);
+  window.notifyTimer = setTimeout(() => {
+    notification.style.top = "-100px";
+  }, 3000);
+}
+
+// ACCOUNT SYSTEM
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const email = nameInput.value.trim().toLowerCase();
+  const message = passwordInput.value.trim();
+
+  if (!email || !message) {
+    notify("Please fill in all fields.", false);
+    return;
+  }
+
+  const users = getData("canvas_users");
+  let success = false;
+
+  if (authMode.value === "signup") {
+    if (users.some(user => user.email === email)) {
+      notify("An account with this email already exists.", false);
+      return;
     }
 
-    function autoResize(el) {
-      el.style.height = '40px';
-      el.style.height = el.scrollHeight + 'px';
+    users.push({email, password: message});
+    saveData("canvas_users", users);
+
+    notify("Account created successfully!");
+    success = true;
+
+  } else {
+    const user = users.find(
+      user => user.email === email && user.password === message
+    );
+
+    if (!user) {
+      notify("Incorrect email or password.", false);
+      return;
     }
 
-    messageInput.addEventListener('input', () => autoResize(messageInput));
+    sessionStorage.setItem("canvas_logged_in", email);
+    notify("Successfully signed in!");
+    success = true;
+  }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+  if (success) {
+    // Save email and the user's nice thing to say in feedback.
+    const feedback = getData("canvas_feedback");
 
-      const name = nameInput.value.trim();
-      const message = messageInput.value.trim();
-
-      if (!name || !message) {
-        showNotification("Please fill out all fields", false);
-        return;
-      }
-
-      const { error } = await supabaseClient
-        .from("feedback")
-        .insert([{ name, message }]);
-
-      if (error) {
-        console.error(error);
-        showNotification("Failed to submit feedback: " + error.message, false);
-      } else {
-        showNotification("Feedback submitted successfully!");
-        nameInput.value = "";
-        messageInput.value = "";
-        autoResize(messageInput);
-      }
+    feedback.push({
+      name: email,
+      message: message,
+      created_at: new Date().toISOString()
     });
 
-    async function loadFeedback(filter = "") {
-      feedbackList.textContent = "Loading...";
+    saveData("canvas_feedback", feedback);
 
-      try {
-        const { data, error } = await supabaseClient
-          .from("feedback")
-          .select("*")
-          .order("created_at", { ascending: false });
+    passwordInput.value = "";
 
-        if (error) throw error;
+    if (adminPanel.style.display === "block") {
+      loadFeedback();
+    }
+  }
+});
 
-        const filtered = (data || []).filter(f =>
-          String(f.name || "").toLowerCase().includes(filter.toLowerCase()) ||
-          String(f.message || "").toLowerCase().includes(filter.toLowerCase())
-        );
+authMode.addEventListener("change", () => {
+  submitBtn.textContent =
+    authMode.value === "signup" ? "Create Account" : "Sign in";
+});
 
-        feedbackList.replaceChildren();
+// ADMIN LOGIN
+adminBtn.addEventListener("click", () => {
+  const password = prompt("Enter admin password:");
 
-        if (filtered.length === 0) {
-          feedbackList.textContent = "No feedback found.";
-          return;
-        }
+  if (password === null) return;
 
-        filtered.forEach(item => {
-          const div = document.createElement("div");
-          div.classList.add("feedback-item");
+  if (password === ADMIN_PASSWORD) {
+    adminPanel.style.display = "block";
+    notify("Admin access granted!");
+    loadFeedback();
+  } else {
+    notify("Wrong admin password!", false);
+  }
+});
 
-          const strong = document.createElement("strong");
-          strong.textContent = item.name || "Anonymous";
+// FEEDBACK DISPLAY
+function loadFeedback() {
+  refreshBtn.disabled = true;
+  refreshBtn.textContent = "Loading...";
 
-          const answer = document.createElement("span");
-          answer.textContent = ": " + (item.message || "");
+  try {
+    const feedback = getData("canvas_feedback");
+    const query = searchInput.value.trim().toLowerCase();
 
-          const date = document.createElement("small");
-          date.textContent = item.created_at
-            ? new Date(item.created_at).toLocaleString()
-            : "";
+    const filtered = feedback.filter(item =>
+      String(item.name || "").toLowerCase().includes(query) ||
+      String(item.message || "").toLowerCase().includes(query)
+    );
 
-          div.append(strong, answer, document.createElement("br"), date);
-          feedbackList.appendChild(div);
-        });
+    feedbackList.replaceChildren();
 
-      } catch (error) {
-        console.error("Supabase error:", error);
-        feedbackList.textContent = "Error loading feedback: " + error.message;
-      }
+    if (filtered.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "No feedback found.";
+      feedbackList.appendChild(empty);
+      return;
     }
 
-    adminBtn.addEventListener('click', () => {
-      const pass = prompt("Enter admin password:");
+    filtered.slice().reverse().forEach(item => {
+      const div = document.createElement("div");
+      div.className = "feedback-item";
 
-      if (pass === "savnacsigma") {
-        adminPanel.style.display = "block";
-        loadFeedback();
-      } else if (pass !== null) {
-        alert("Wrong password!");
-      }
+      const name = document.createElement("strong");
+      name.textContent = "Email: " + (item.name || "Anonymous");
+
+      const message = document.createElement("p");
+      message.textContent =
+        "Nice thing about yourself: " + (item.message || "");
+
+      const date = document.createElement("small");
+      date.textContent = item.created_at
+        ? new Date(item.created_at).toLocaleString()
+        : "";
+
+      div.append(name, message, date);
+      feedbackList.appendChild(div);
     });
 
-    searchInput.addEventListener('input', () => loadFeedback(searchInput.value));
+  } catch(error) {
+    feedbackList.textContent = "Could not load feedback.";
+    console.error(error);
+  } finally {
+    refreshBtn.disabled = false;
+    refreshBtn.textContent = "Refresh";
+  }
+}
 
-    refreshBtn.addEventListener('click', () => loadFeedback(searchInput.value));
-  </script>
+searchInput.addEventListener("input", loadFeedback);
+refreshBtn.addEventListener("click", loadFeedback);
+
+window.addEventListener("storage", event => {
+  if (event.key === "canvas_feedback") loadFeedback();
+});
+</script>
 </body>
 </html>
