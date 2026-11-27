@@ -1,181 +1,585 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Canvas</title>
-  <style>
-    body {
-      background: #121212;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 2rem;
-    }
-    button {
-      background: #1e1e1e;
-      border: 2px solid #fff;
-      color: white;
-      padding: 10px 20px;
-      margin: 10px;
-      border-radius: 12px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-    button:hover {
-      background: #333;
-      transform: scale(1.05);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canvas | Voice Commands</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', Arial, sans-serif;
+  color: white;
+  background:
+    radial-gradient(ellipse at 15% 15%, #172b62 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 85%, #40145e 0%, transparent 45%),
+    #080b16;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: .18;
+  background-image:
+    linear-gradient(rgba(100,140,255,.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100,140,255,.12) 1px, transparent 1px);
+  background-size: 45px 45px;
+  mask-image: linear-gradient(to bottom, black, transparent);
+}
+
+.glow {
+  position: fixed;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: .18;
+  pointer-events: none;
+  animation: float 8s ease-in-out infinite alternate;
+}
+
+.glow.one {
+  background: #3977ff;
+  top: -130px;
+  left: -100px;
+}
+
+.glow.two {
+  background: #a13cff;
+  bottom: -150px;
+  right: -100px;
+  animation-delay: -4s;
+}
+
+@keyframes float {
+  to { transform: translate(70px, 50px) scale(1.2); }
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 650px;
+  padding: 45px 35px;
+  text-align: center;
+  border: 1px solid rgba(145,170,255,.2);
+  border-radius: 28px;
+  background: rgba(14,19,39,.78);
+  backdrop-filter: blur(25px);
+  box-shadow:
+    0 25px 90px rgba(0,0,0,.45),
+    0 0 55px rgba(65,100,255,.09),
+    inset 0 1px rgba(255,255,255,.07);
+  animation: appear .7s ease;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(20px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.logo {
+  width: 85px;
+  height: 85px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 22px;
+  font-size: 38px;
+  border-radius: 25px;
+  background: linear-gradient(135deg, #287bff, #963dff);
+  box-shadow: 0 0 35px rgba(91,90,255,.45);
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(30px, 6vw, 43px);
+  font-weight: 900;
+  letter-spacing: -1.8px;
+}
+
+h1 span {
+  background: linear-gradient(90deg, #64b5ff, #b58aff);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  color: #9ba9c9;
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 13px auto 28px;
+  max-width: 430px;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 15px;
+  border: 1px solid rgba(100,130,255,.2);
+  border-radius: 30px;
+  background: rgba(60,90,180,.1);
+  color: #b7c8f5;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  margin-bottom: 30px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #48e6a0;
+  box-shadow: 0 0 12px #48e6a0;
+}
+
+.status.listening .dot {
+  background: #ff4c9a;
+  box-shadow: 0 0 15px #ff4c9a;
+  animation: pulse .8s infinite alternate;
+}
+
+@keyframes pulse {
+  to { opacity: .3; transform: scale(.7); }
+}
+
+.mic-area {
+  margin: 0 auto 25px;
+}
+
+.mic-button {
+  position: relative;
+  width: 115px;
+  height: 115px;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  color: white;
+  font-size: 43px;
+  background: linear-gradient(145deg, #397fff, #853dff);
+  box-shadow: 0 0 35px rgba(86,104,255,.4);
+  transition: .25s ease;
+}
+
+.mic-button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 55px rgba(100,110,255,.7);
+}
+
+.mic-button:active {
+  transform: scale(.94);
+}
+
+.mic-button.listening {
+  animation: micPulse 1.2s infinite;
+  background: linear-gradient(145deg, #fa438e, #a53dff);
+}
+
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(180,80,255,.4); }
+  50% { box-shadow: 0 0 0 22px rgba(180,80,255,0); }
+}
+
+.mic-label {
+  margin-top: 15px;
+  color: #aebcda;
+  font-size: 13px;
+}
+
+.command-box {
+  padding: 20px;
+  margin: 28px 0;
+  border: 1px solid rgba(130,155,255,.14);
+  border-radius: 18px;
+  background: rgba(255,255,255,.035);
+  text-align: left;
+}
+
+.command-title {
+  color: #8296c4;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  margin-bottom: 14px;
+}
+
+.command {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  color: #dce5ff;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+.command:last-child {
+  border: 0;
+  padding-bottom: 0;
+}
+
+.command-icon {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: rgba(91,117,255,.15);
+}
+
+.command b {
+  color: #80baff;
+}
+
+.result {
+  min-height: 48px;
+  padding: 14px 16px;
+  margin-bottom: 22px;
+  border-radius: 13px;
+  background: rgba(5,9,23,.55);
+  border: 1px solid rgba(130,155,255,.12);
+  color: #b9c8e8;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.result strong {
+  color: white;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.action-button {
+  padding: 13px 22px;
+  border: 1px solid rgba(135,160,255,.25);
+  border-radius: 13px;
+  background: rgba(70,95,170,.13);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.action-button:hover {
+  background: rgba(90,120,230,.25);
+  border-color: #829dff;
+  transform: translateY(-3px);
+}
+
+.home-button {
+  background: rgba(255,255,255,.06);
+}
+
+.footer {
+  margin-top: 28px;
+  color: #657494;
+  font-size: 11px;
+}
+
+@media(max-width: 500px) {
+  body { padding: 15px; }
+  .container { padding: 35px 20px; }
+  .mic-button { width: 100px; height: 100px; }
+}
+</style>
 </head>
+
 <body>
-  <h1>🎙 Voice Commands</h1>
-  <p>Say: <b>"play random game"</b> OR <b>"play [game name]"</b></p>
+<div class="glow one"></div>
+<div class="glow two"></div>
 
-  <button onclick="startListening()">🎤 Start Listening</button>
-  <button onclick="goHome()">🏠 Home</button>
+<main class="container">
 
-  <script>
-    const games = {
-      "1v1.lol": "1v1lol.html",
-      "2048": "2048.html",
-      "a small world cup": "aswc.html",
-      "among us": "amongus.html",
-      "bacon may die": "baconmaydie.html",
-      "basket random": "basketrandom.html",
-      "bitlife": "bitlife.html",
-      "block blast": "blockblast.html",
-      "clicker hero": "clickerhero.html",
-      "cluster rush": "clusterrush.html",
-      "cookie clicker": "cookieclicker.html",
-      "crossyroad": "crossyroad.html",
-      "cut the rope": "cuttherope.html",
-      "death run": "deathrun.html",
-      "drive mad": "drivemad.html",
-      "duck life": "ducklife.html",
-      "geometry dash": "geometrydash.html",
-      "get away shootout": "getawayshootout.html",
-      "gun spin": "gunspin.html",
-      "granny": "granny.html",
-      "hole.io": "hole-io.html",
-      "javascript roulette": "js.html",
-      "little alchemy 2": "la.html",
-      "motox3m": "motox3m.html",
-      "monkey mart": "monkeymart.html",
-      "ovo": "ovo.html",
-      "pacman": "pacman.html",
-      "paper.io 2": "paper.io2.html",
-      "ragdoll archers": "ragdollarchers.html",
-      "ragdoll hit": "ragdollhit.html",
-      "retro bowl": "retrobowl.html",
-      "retro bowl college": "retrobowlcollege.html",
-      "subway surfers": "subwaysurfers.html",
-      "slope": "slope.html",
-      "stick man hook": "stickmanhook.html",
-      "snow rider 3d": "snowrider3d.html",
-      "superhot": "superhot.html",
-      "we become what we behold": "wbwwb.html",
-      "wheelie bike": "wheeliebike.html"
-    };
+  <div class="logo">🎙️</div>
 
-    function speak(text) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.pitch = 1;
-      utterance.rate = 1;
-      utterance.volume = 1;
-      window.speechSynthesis.speak(utterance);
+  <h1>Voice <span>Commands</span></h1>
+
+  <p class="subtitle">
+    Your voice is your controller. Tell Canvas what game you want to play and let the magic happen.
+  </p>
+
+  <div class="status" id="status">
+    <span class="dot"></span>
+    <span id="statusText">SYSTEM READY</span>
+  </div>
+
+  <div class="mic-area">
+    <button class="mic-button" id="micButton" onclick="startListening()">🎤</button>
+    <div class="mic-label" id="micLabel">Tap the microphone to start</div>
+  </div>
+
+  <div class="command-box">
+    <div class="command-title">AVAILABLE VOICE COMMANDS</div>
+
+    <div class="command">
+      <div class="command-icon">🎮</div>
+      <div>Say <b>"Play random game"</b></div>
+    </div>
+
+    <div class="command">
+      <div class="command-icon">🔎</div>
+      <div>Say <b>"Play Geometry Dash"</b></div>
+    </div>
+
+    <div class="command">
+      <div class="command-icon">⚡</div>
+      <div>Say <b>"Play Subway Surfers"</b></div>
+    </div>
+  </div>
+
+  <div class="result" id="result">
+    <strong>Ready:</strong> Waiting for your voice command...
+  </div>
+
+  <div class="buttons">
+    <button class="action-button" onclick="startListening()">🎤 Start Listening</button>
+    <button class="action-button home-button" onclick="goHome()">⌂ Home</button>
+  </div>
+
+  <div class="footer">CANVAS ARCADE • VOICE CONTROL SYSTEM</div>
+</main>
+
+<script>
+const games = {
+  "1v1.lol": "1v1lol.html",
+  "2048": "2048.html",
+  "a small world cup": "aswc.html",
+  "among us": "amongus.html",
+  "bacon may die": "baconmaydie.html",
+  "basket random": "basketrandom.html",
+  "bitlife": "bitlife.html",
+  "block blast": "blockblast.html",
+  "clicker hero": "clickerhero.html",
+  "cluster rush": "clusterrush.html",
+  "cookie clicker": "cookieclicker.html",
+  "crossyroad": "crossyroad.html",
+  "cut the rope": "cuttherope.html",
+  "death run": "deathrun.html",
+  "drive mad": "drivemad.html",
+  "duck life": "ducklife.html",
+  "geometry dash": "geometrydash.html",
+  "get away shootout": "getawayshootout.html",
+  "gun spin": "gunspin.html",
+  "granny": "granny.html",
+  "hole.io": "hole-io.html",
+  "javascript roulette": "js.html",
+  "little alchemy 2": "la.html",
+  "motox3m": "motox3m.html",
+  "monkey mart": "monkeymart.html",
+  "ovo": "ovo.html",
+  "pacman": "pacman.html",
+  "paper.io 2": "paper.io2.html",
+  "ragdoll archers": "ragdollarchers.html",
+  "ragdoll hit": "ragdollhit.html",
+  "retro bowl": "retrobowl.html",
+  "retro bowl college": "retrobowlcollege.html",
+  "subway surfers": "subwaysurfers.html",
+  "slope": "slope.html",
+  "stick man hook": "stickmanhook.html",
+  "snow rider 3d": "snowrider3d.html",
+  "superhot": "superhot.html",
+  "we become what we behold": "wbwwb.html",
+  "wheelie bike": "wheeliebike.html"
+};
+
+let recognition;
+let listening = false;
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.pitch = 1;
+  utterance.rate = 1;
+  utterance.volume = 1;
+  window.speechSynthesis.speak(utterance);
+}
+
+function updateStatus(isListening, text) {
+  document.getElementById("status").classList.toggle("listening", isListening);
+  document.getElementById("micButton").classList.toggle("listening", isListening);
+  document.getElementById("statusText").textContent = text;
+  document.getElementById("micLabel").textContent =
+    isListening ? "Listening... Speak now!" : "Tap the microphone to start";
+  listening = isListening;
+}
+
+function showResult(title, message) {
+  document.getElementById("result").innerHTML =
+    "<strong>" + title + "</strong> " + message;
+}
+
+function startListening() {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    showResult("Not supported:", "Your browser does not support voice recognition. Try Chrome.");
+    speak("Voice recognition is not supported in this browser.");
+    return;
+  }
+
+  if (listening && recognition) {
+    recognition.stop();
+    return;
+  }
+
+  speak("Listening...");
+  recognition = new SpeechRecognition();
+  recognition.lang = "en-US";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = () => {
+    updateStatus(true, "LISTENING");
+    showResult("Listening:", "Waiting for your command...");
+  };
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript.toLowerCase().trim();
+    console.log("Heard:", transcript);
+
+    showResult("Heard:", '"' + transcript + '"');
+
+    if (transcript.includes("play random game")) {
+      speak("Playing a random game!");
+      playRandomGame();
+      return;
     }
 
-    function startListening() {
-      speak("Listening...");
-      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognition.lang = "en-US";
-      recognition.start();
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript.toLowerCase();
-        console.log("Heard:", transcript);
-
-        if (transcript.includes("play random game")) {
-          speak("Playing a random game!");
-          playRandomGame();
-          return;
-        }
-
-        if (transcript.includes("play")) {
-          let gameName = transcript.replace("play", "").trim();
-          playGameByName(gameName);
-          return;
-        }
-
-        speak("Sorry, I didn't understand that.");
-      };
-
-      recognition.onerror = (event) => {
-        console.error("Voice error:", event.error);
-        speak("There was an error listening.");
-      };
+    if (transcript.includes("play")) {
+      let gameName = transcript.replace("play", "").trim();
+      playGameByName(gameName);
+      return;
     }
 
-    function playRandomGame() {
-      const gameKeys = Object.keys(games);
-      const randomKey = gameKeys[Math.floor(Math.random() * gameKeys.length)];
-      speak("Launching " + randomKey);
-      setTimeout(() => window.location.href = games[randomKey], 1000);
+    speak("Sorry, I didn't understand that.");
+    showResult("Command not recognized:", "Try saying play random game or play followed by a game name.");
+  };
+
+  recognition.onerror = (event) => {
+    updateStatus(false, "SYSTEM READY");
+    showResult("Voice error:", event.error + ". Try again.");
+  };
+
+  recognition.onend = () => {
+    updateStatus(false, "SYSTEM READY");
+  };
+
+  try {
+    recognition.start();
+  } catch (error) {
+    updateStatus(false, "SYSTEM READY");
+    showResult("Error:", "Please try starting the microphone again.");
+  }
+}
+
+function playRandomGame() {
+  const gameKeys = Object.keys(games);
+  const randomKey = gameKeys[Math.floor(Math.random() * gameKeys.length)];
+
+  showResult("Launching:", randomKey);
+  updateStatus(false, "LAUNCHING GAME");
+  speak("Launching " + randomKey);
+
+  setTimeout(() => {
+    window.location.href = games[randomKey];
+  }, 1200);
+}
+
+function playGameByName(name) {
+  name = name.toLowerCase().trim();
+
+  if (games[name]) {
+    launchGame(name);
+    return;
+  }
+
+  let bestMatch = null;
+  let bestScore = Infinity;
+
+  for (const key of Object.keys(games)) {
+    const score = levenshteinDistance(name, key);
+    if (score < bestScore) {
+      bestScore = score;
+      bestMatch = key;
     }
+  }
 
-    function playGameByName(name) {
-      name = name.toLowerCase();
+  if (bestMatch && bestScore <= 5) {
+    showResult("Game found:", "Launching " + bestMatch + "...");
+    speak("Did you mean " + bestMatch + "? Launching it now.");
+    setTimeout(() => {
+      window.location.href = games[bestMatch];
+    }, 1500);
+  } else {
+    showResult("Game not found:", "I couldn't find a game called " + name + ".");
+    speak("I couldn't find a game called " + name);
+  }
+}
 
-      if (games[name]) {
-        speak("Launching " + name);
-        setTimeout(() => window.location.href = games[name], 1000);
-        return;
-      }
+function launchGame(name) {
+  showResult("Launching:", name);
+  updateStatus(false, "LAUNCHING GAME");
+  speak("Launching " + name);
 
-      let bestMatch = null;
-      let bestScore = Infinity;
+  setTimeout(() => {
+    window.location.href = games[name];
+  }, 1000);
+}
 
-      for (const key of Object.keys(games)) {
-        let score = levenshteinDistance(name, key);
-        if (score < bestScore) {
-          bestScore = score;
-          bestMatch = key;
-        }
-      }
+function levenshteinDistance(a, b) {
+  const dp = Array.from(
+    { length: a.length + 1 },
+    () => Array(b.length + 1).fill(0)
+  );
 
-      if (bestMatch && bestScore <= 5) {
-        speak("Did you mean " + bestMatch + "? Launching it now.");
-        setTimeout(() => window.location.href = games[bestMatch], 1500);
-      } else {
-        speak("I couldn't find a game called " + name);
-      }
+  for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+  for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,
+        dp[i][j - 1] + 1,
+        dp[i - 1][j - 1] + cost
+      );
     }
+  }
 
-    function levenshteinDistance(a, b) {
-      const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
-      for (let i = 0; i <= a.length; i++) dp[i][0] = i;
-      for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+  return dp[a.length][b.length];
+}
 
-      for (let i = 1; i <= a.length; i++) {
-        for (let j = 1; j <= b.length; j++) {
-          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-          dp[i][j] = Math.min(
-            dp[i - 1][j] + 1,
-            dp[i][j - 1] + 1,
-            dp[i - 1][j - 1] + cost
-          );
-        }
-      }
-      return dp[a.length][b.length];
-    }
-
-    function goHome() {
-      speak("Going home.");
-      setTimeout(() => window.location.href = "index.html", 800);
-    }
-  </script>
+function goHome() {
+  speak("Going home.");
+  setTimeout(() => {
+    window.location.href = "index.html";
+  }, 800);
+}
+</script>
 </body>
 </html>
