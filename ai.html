@@ -6,98 +6,399 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ChatSAC AI</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 *{box-sizing:border-box}
+
+:root{
+ --bg:#080a12;
+ --panel:#101522;
+ --blue:#00d9ff;
+ --purple:#925cff;
+ --text:#f4f6ff;
+ --muted:#858da5;
+}
+
 body{
- margin:0;background:#101116;color:white;
- font-family:Arial,sans-serif;height:100dvh;
- display:flex;flex-direction:column
+ margin:0;
+ height:100dvh;
+ overflow:hidden;
+ font-family:Inter,Arial,sans-serif;
+ color:var(--text);
+ background:
+ radial-gradient(ellipse at 15% 10%,#162451 0,transparent 40%),
+ radial-gradient(ellipse at 85% 80%,#251343 0,transparent 40%),
+ var(--bg);
+ display:flex;
+ flex-direction:column;
 }
+
+body:before{
+ content:"";
+ position:fixed;
+ inset:0;
+ pointer-events:none;
+ opacity:.15;
+ background-image:radial-gradient(#8290c5 1px,transparent 1px);
+ background-size:30px 30px;
+}
+
 header{
- padding:15px 18px;background:#191b22;
- border-bottom:1px solid #30333c;
- display:flex;justify-content:space-between;align-items:center
+ position:relative;
+ z-index:2;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:15px 22px;
+ background:rgba(12,15,27,.82);
+ backdrop-filter:blur(20px);
+ border-bottom:1px solid rgba(255,255,255,.08);
 }
-.logo{font-size:23px;font-weight:bold}
-.logo small{display:block;font-size:11px;color:#00e5ff;margin-top:4px}
-.status{font-size:11px;color:#00e5ff}
+
+.brand{
+ display:flex;
+ align-items:center;
+ gap:12px;
+}
+
+.logo{
+ width:43px;
+ height:43px;
+ border-radius:14px;
+ display:grid;
+ place-items:center;
+ font-size:22px;
+ font-weight:800;
+ color:white;
+ background:linear-gradient(135deg,#00d9ff,#7950ff);
+ box-shadow:0 0 25px #00d9ff44;
+}
+
+.brand-name{
+ font-size:20px;
+ font-weight:800;
+ letter-spacing:-.7px;
+}
+
+.brand-name span{
+ color:var(--blue);
+}
+
+.brand small{
+ display:block;
+ color:var(--muted);
+ font-size:10px;
+ margin-top:4px;
+ letter-spacing:1px;
+}
+
+.online{
+ display:flex;
+ align-items:center;
+ gap:7px;
+ padding:8px 12px;
+ border:1px solid #00e5ff33;
+ border-radius:30px;
+ background:#00d9ff0b;
+ color:#54edff;
+ font-size:11px;
+}
+
+.dot{
+ width:7px;height:7px;
+ border-radius:50%;
+ background:#36f5a0;
+ box-shadow:0 0 10px #36f5a0;
+ animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+ 50%{opacity:.35;transform:scale(.8)}
+}
+
 #chat{
- flex:1;overflow-y:auto;padding:17px;
- display:flex;flex-direction:column;gap:13px
+ flex:1;
+ overflow-y:auto;
+ padding:25px 16px;
+ display:flex;
+ flex-direction:column;
+ gap:17px;
+ position:relative;
+ z-index:1;
+ scroll-behavior:smooth;
 }
-.welcome{text-align:center;margin:auto;max-width:400px;color:#aaa;padding:25px}
-.welcome h2{color:white;font-size:27px}
-.welcome p{line-height:1.6}
+
+.welcome{
+ margin:auto;
+ text-align:center;
+ max-width:500px;
+ padding:25px 15px;
+ animation:fade .7s ease;
+}
+
+.welcome-icon{
+ width:75px;
+ height:75px;
+ margin:0 auto 22px;
+ border-radius:25px;
+ display:grid;
+ place-items:center;
+ font-size:37px;
+ background:linear-gradient(135deg,#00d9ff,#8750ff);
+ box-shadow:0 0 45px #725aff55;
+}
+
+.welcome h1{
+ font-size:clamp(30px,7vw,46px);
+ letter-spacing:-2px;
+ margin:0;
+}
+
+.welcome h1 span{
+ background:linear-gradient(90deg,#00e5ff,#a879ff);
+ -webkit-background-clip:text;
+ color:transparent;
+}
+
+.welcome p{
+ color:var(--muted);
+ font-size:14px;
+ line-height:1.8;
+ margin:15px 0 25px;
+}
+
+.welcome-tag{
+ display:inline-block;
+ padding:8px 14px;
+ border-radius:30px;
+ color:#a9a1ff;
+ border:1px solid #9a7bff44;
+ background:#9a7bff0c;
+ font-size:11px;
+}
+
 .message{
- max-width:88%;padding:12px 15px;border-radius:15px;
- line-height:1.55;font-size:15px;white-space:pre-wrap;
- overflow-wrap:anywhere;animation:appear .2s ease
+ max-width:min(85%,700px);
+ padding:14px 17px;
+ border-radius:19px;
+ font-size:14px;
+ line-height:1.75;
+ white-space:pre-wrap;
+ overflow-wrap:anywhere;
+ animation:fade .25s ease;
 }
-@keyframes appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-.user{align-self:flex-end;background:#075e68}
-.ai{align-self:flex-start;background:#252831}
-.thinking{color:#aaa;font-style:italic}
+
+.user{
+ align-self:flex-end;
+ background:linear-gradient(135deg,#135b88,#5740a2);
+ border:1px solid #8e8aff44;
+ border-bottom-right-radius:5px;
+ box-shadow:0 5px 25px #5640a222;
+}
+
+.ai{
+ align-self:flex-start;
+ background:rgba(23,29,46,.9);
+ border:1px solid rgba(255,255,255,.09);
+ border-bottom-left-radius:5px;
+ box-shadow:0 5px 25px #0003;
+}
+
+.thinking{
+ color:#9da9c6;
+ display:flex;
+ align-items:center;
+ gap:10px;
+}
+
+.loader{
+ display:flex;
+ gap:4px;
+}
+
+.loader i{
+ width:6px;height:6px;
+ border-radius:50%;
+ background:var(--blue);
+ animation:bounce .7s infinite alternate;
+}
+
+.loader i:nth-child(2){animation-delay:.2s}
+.loader i:nth-child(3){animation-delay:.4s}
+
+@keyframes bounce{
+ to{transform:translateY(-6px);opacity:.4}
+}
+
+@keyframes fade{
+ from{opacity:0;transform:translateY(9px)}
+ to{opacity:1;transform:translateY(0)}
+}
+
 #suggestions{
- display:flex;gap:8px;overflow-x:auto;padding:10px 12px;
- background:#15171c
+ position:relative;
+ z-index:2;
+ display:flex;
+ gap:9px;
+ overflow-x:auto;
+ padding:12px 16px;
+ scrollbar-width:none;
 }
+
+#suggestions::-webkit-scrollbar{display:none}
+
 #suggestions button{
- background:#272a34;color:white;white-space:nowrap;
- font-size:12px;padding:9px 12px
+ flex-shrink:0;
+ background:rgba(25,32,51,.8);
+ border:1px solid rgba(255,255,255,.09);
+ color:#c4cce3;
+ border-radius:30px;
+ padding:10px 15px;
+ font-size:11px;
+ transition:.2s;
 }
+
+#suggestions button:hover{
+ border-color:var(--blue);
+ color:white;
+ transform:translateY(-2px);
+}
+
 #inputArea{
- display:flex;gap:9px;padding:12px;
- background:#191b22;border-top:1px solid #30333c
+ position:relative;
+ z-index:2;
+ padding:12px 15px 10px;
+ background:rgba(9,12,22,.9);
+ backdrop-filter:blur(20px);
+ border-top:1px solid rgba(255,255,255,.07);
 }
+
+.input-wrap{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ max-width:850px;
+ margin:auto;
+ padding:7px;
+ background:#171d2c;
+ border:1px solid #39425b;
+ border-radius:17px;
+ transition:.2s;
+}
+
+.input-wrap:focus-within{
+ border-color:#00d9ff;
+ box-shadow:0 0 20px #00d9ff17;
+}
+
 input{
- flex:1;min-width:0;padding:14px;
- border:1px solid #3a3d48;border-radius:12px;
- background:#252831;color:white;font-size:16px;outline:none
+ flex:1;
+ min-width:0;
+ padding:12px 10px;
+ border:0;
+ outline:none;
+ background:transparent;
+ color:white;
+ font-family:inherit;
+ font-size:14px;
 }
-input:focus{border-color:#00e5ff}
-button{
- border:0;border-radius:10px;padding:12px 17px;
- background:#00e5ff;color:#000;font-weight:bold;cursor:pointer
+
+input::placeholder{color:#737d97}
+
+#send{
+ width:43px;
+ height:43px;
+ padding:0;
+ border-radius:12px;
+ color:#080b14;
+ font-size:19px;
+ background:linear-gradient(135deg,#00e5ff,#9c6bff);
+ box-shadow:0 0 18px #00d9ff33;
+ transition:.2s;
 }
-button:disabled{opacity:.5}
+
+#send:hover{
+ transform:scale(1.06);
+ box-shadow:0 0 25px #00d9ff66;
+}
+
+#send:disabled{opacity:.4}
+
 #bottom{
- display:flex;justify-content:space-between;padding:9px 13px;
- background:#191b22;color:#999;font-size:11px
+ display:flex;
+ justify-content:space-between;
+ max-width:850px;
+ margin:9px auto 0;
+ color:#67718b;
+ font-size:10px;
 }
+
 #bottom span{cursor:pointer}
-#memory{padding:6px 12px;background:#14161b;color:#777;font-size:11px}
+#bottom span:hover{color:var(--blue)}
+
+#memory{
+ position:relative;
+ z-index:2;
+ text-align:center;
+ padding:7px;
+ color:#65718b;
+ font-size:10px;
+ background:#0b0e17;
+}
+
+@media(max-width:500px){
+ header{padding:12px 14px}
+ .brand-name{font-size:18px}
+ #chat{padding:17px 12px}
+ .message{max-width:92%}
+ .welcome h1{font-size:34px}
+ .online{font-size:9px;padding:7px 9px}
+}
+
 </style>
 </head>
 <body>
+
 <header>
- <div class="logo">ChatSAC<small>Beta 4.0 • Smart AI Assistant</small></div>
- <div class="status">● ONLINE</div>
+ <div class="brand">
+  <div class="logo">S</div>
+  <div>
+   <div class="brand-name">Chat<span>SAC</span></div>
+   <small>INTELLIGENT AI ASSISTANT • BETA 5.0</small>
+  </div>
+ </div>
+ <div class="online"><span class="dot"></span> ONLINE</div>
 </header>
 
 <div id="chat">
  <div class="welcome" id="welcome">
-  <h2>Hey! I'm ChatSAC. 👋</h2>
-  <p>Your personal assistant. Ask me about anything from math and science to coding, history, games, and everyday questions.</p>
+  <div class="welcome-icon">✦</div>
+  <h1>Meet your new <span>AI.</span></h1>
+  <p>Hey! I'm ChatSAC. Your personal assistant for questions, ideas, coding, math, games, and everything in between.</p>
+  <div class="welcome-tag">✦ WHAT CAN I HELP YOU WITH?</div>
  </div>
 </div>
 
 <div id="suggestions">
- <button onclick="suggest('Tell me a random interesting fact')">Interesting facts</button>
- <button onclick="suggest('Solve 458 times 27')">Math 🧮</button>
- <button onclick="suggest('Tell me a joke')">Jokes 😂</button>
- <button onclick="suggest('Explain black holes')">Science 🔬</button>
- <button onclick="suggest('Give me a random game')">Games 🎮</button>
- <button onclick="suggest('Teach me JavaScript')">Coding 💻</button>
+ <button onclick="suggest('Tell me an interesting fact')">✦ Interesting facts</button>
+ <button onclick="suggest('Solve 458 times 27')">🧮 Math</button>
+ <button onclick="suggest('Tell me a joke')">😂 Jokes</button>
+ <button onclick="suggest('Explain black holes')">🌌 Science</button>
+ <button onclick="suggest('Give me a random game')">🎮 Games</button>
+ <button onclick="suggest('Teach me JavaScript')">💻 Coding</button>
 </div>
 
 <div id="inputArea">
- <input id="input" placeholder="Message ChatSAC..." autocomplete="off">
- <button id="send" onclick="send()">Send</button>
+ <div class="input-wrap">
+  <input id="input" placeholder="Message ChatSAC..." autocomplete="off">
+  <button id="send" onclick="send()">↑</button>
+ </div>
+ <div id="bottom">
+  <span>✦ ChatSAC AI • Made by savnac</span>
+  <span onclick="clearChat()">Clear conversation ↗</span>
+ </div>
 </div>
 
-<div id="bottom">
- <span>ChatSAC • Built by savnac</span>
- <span onclick="clearChat()">Clear chat 🗑️</span>
-</div>
 <div id="memory">Memory: 0 messages</div>
 
 <script>
@@ -107,8 +408,7 @@ const games=[
 "Geometry Dash","Granny","Minecraft","MotoX3M","OvO",
 "Pacman","Retro Bowl","Subway Surfers","Slope",
 "Snow Rider 3D","Ragdoll Archers","Stick Man Hook",
-"Paper.io 2","Monkey Mart","Duck Life","Hole.io",
-"Little Alchemy 2","Poly Track","Whack Your Boss"
+"Paper.io 2","Monkey Mart","Duck Life","Hole.io"
 ];
 
 const jokes=[
@@ -125,15 +425,13 @@ const facts=[
 "A day on Venus is longer than its year.",
 "Honey can last thousands of years without spoiling when properly sealed.",
 "Sharks existed before trees.",
-"There are more possible chess games than atoms in the observable universe.",
-"Bananas are berries, but strawberries aren't botanical berries.",
 "Lightning is hotter than the surface of the Sun.",
-"The Eiffel Tower can grow taller during hot weather."
+"Bananas are botanical berries, but strawberries aren't."
 ];
 
 let history=[];
 try{
- history=JSON.parse(localStorage.getItem("csac4")||"[]");
+ history=JSON.parse(localStorage.getItem("csac5")||"[]");
  if(!Array.isArray(history))history=[];
 }catch(e){history=[]}
 
@@ -143,7 +441,7 @@ const sendBtn=document.getElementById("send");
 
 function save(){
  history=history.slice(-60);
- try{localStorage.setItem("csac4",JSON.stringify(history))}catch(e){}
+ try{localStorage.setItem("csac5",JSON.stringify(history))}catch(e){}
  document.getElementById("memory").textContent=
  "Memory: "+history.length+" messages";
 }
@@ -161,187 +459,131 @@ function message(text,type){
 function random(arr){return arr[Math.floor(Math.random()*arr.length)]}
 
 function calculate(q){
- let s=q.toLowerCase()
- .replace(/,/g,"")
- .replace(/×/g,"*")
- .replace(/÷/g,"/")
+ let s=q.toLowerCase().replace(/,/g,"")
+ .replace(/×/g,"*").replace(/÷/g,"/")
  .replace(/\^/g,"**")
- .replace(/(\d+)\s*percent/g,"($1/100)")
- .replace(/(\d+)%/g,"($1/100)")
  .replace(/square root of (\d+(?:\.\d+)?)/g,"Math.sqrt($1)")
  .replace(/(\d+(?:\.\d+)?) squared/g,"($1**2)")
- .replace(/(\d+(?:\.\d+)?) cubed/g,"($1**3)");
-
- s=s.replace(/^(what is|calculate|solve|answer|compute|how much is)\s*/,"").replace(/[?=]/g,"").trim();
-
+ .replace(/(\d+)%/g,"($1/100)")
+ .replace(/^(what is|calculate|solve|compute|how much is)\s*/,"")
+ .replace(/[?=]/g,"").trim();
  if(!s||!/^[\d\s+\-*/().%*]+$/.test(s))return null;
-
  try{
-  let result=Function('"use strict";return ('+s+')')();
-  if(typeof result!=="number"||!Number.isFinite(result))return null;
-  return Number(result.toPrecision(12)).toString();
+  let n=Function('"use strict";return ('+s+')')();
+  return typeof n==="number"&&Number.isFinite(n)?Number(n.toPrecision(12)).toString():null;
  }catch(e){return null}
 }
 
 function answer(q){
- const t=q.toLowerCase().trim();
+ let t=q.toLowerCase().trim();
 
  if(/who made you|who created you|who built you/.test(t))
- return "The savnac team! Which is just one super smart and handsome guy 😏 His name starts with H!";
+ return "The savnac team! Just one super smart and handsome guy 😏 His name starts with H!";
 
  if(/who are you|what are you/.test(t))
- return "I'm ChatSAC, your personal AI assistant! I can help with math, coding, games, schoolwork, science, jokes, and much more. 😎";
+ return "I'm ChatSAC, your personal AI assistant! ✦";
 
  if(/how are you/.test(t))
- return "I'm doing great! Thanks for asking. How are you? 😎";
+ return "I'm doing amazing! Thanks for asking. What are we doing today? 😎";
 
- if(/hello|^hi\b|^hey\b|^yo\b|wassup|what's up/.test(t))
- return "HEYYYY! 👋 What's up? What are we doing today?";
+ if(/^(hi|hello|hey|yo|sup)\b/.test(t))
+ return "HEYYYY! 👋 Welcome back! What can I help you with?";
 
- if(/thank/.test(t))return "You're welcome!! Always happy to help! 😊";
+ if(/thank/.test(t))return "You're welcome! Anytime! 💙";
 
  if(/joke|make me laugh|funny/.test(t))return random(jokes);
 
- if(/interesting fact|random fact|tell me a fact/.test(t))
- return random(facts);
+ if(/interesting fact|random fact|tell me a fact/.test(t))return random(facts);
 
- if(/random game|recommend.*game|pick.*game|suggest.*game/.test(t))
- return "You should try "+random(games)+"! 🎮";
+ if(/random game|recommend.*game|pick.*game/.test(t))
+ return "✦ My recommendation: "+random(games)+"! 🎮";
 
- if(/game list|all games|list.*games/.test(t))
- return "Here is my game collection:\n\n"+games.join(", ");
+ if(/game list|all games/.test(t))return games.join(", ");
 
- if(/how many games/.test(t))
- return "I currently know "+games.length+" games! 🎮";
+ if(/how many games/.test(t))return "I currently know "+games.length+" games! 🎮";
 
- if(/meow|purr|rawr/.test(t))return "MEOOOOOOWWW 🐱🐱 RAWRRRR!";
+ if(/what can you do|help me/.test(t))
+ return "Here's what I can help with:\n\n✦ Math and calculations\n✦ Coding and websites\n✦ Science and technology\n✦ History and geography\n✦ Schoolwork\n✦ Games and recommendations\n✦ Jokes and fun facts\n\nAsk me anything!";
 
- if(/what can you do|help me|your abilities/.test(t))
- return "Here's what I can help with:\n\n🧮 Math and calculations\n💻 HTML, CSS and JavaScript\n🔬 Science and technology\n🌎 Geography and history\n📚 School explanations\n🎮 Games and recommendations\n😂 Jokes and fun facts\n💬 Everyday questions\n\nAsk me anything!";
+ if(/meow|purr|rawr/.test(t))return "MEOOOOOOWWW 🐱 RAWRRR!";
 
- // Math
- if(/^(what is|calculate|solve|answer|compute|how much is|square root of)\b/.test(t)||
- /^[\d(.-][\d\s+\-*/().%^×÷]*$/.test(t)){
-  let result=calculate(t);
-  if(result!==null)return "Let's work it out! 🧮\n\nThe answer is **"+result+"**.";
- }
+ let result=calculate(t);
+ if(result!==null)
+ return "Let's solve that! 🧮\n\nThe answer is "+result+".";
 
- // Time-independent general knowledge
- if(/capital of france/.test(t))return "The capital of France is Paris! 🇫🇷";
- if(/capital of (the )?usa|capital of america/.test(t))return "The capital of the United States is Washington, D.C.";
- if(/capital of (the )?uk|capital of england/.test(t))return "The capital of the United Kingdom is London.";
- if(/largest planet/.test(t))return "Jupiter is the largest planet in our solar system! 🪐";
- if(/smallest planet/.test(t))return "Mercury is the smallest planet in our solar system.";
- if(/how many planets/.test(t))return "There are 8 recognized planets in our solar system.";
- if(/who invented the internet/.test(t))return "The internet developed through the work of many people. Vint Cerf and Bob Kahn are especially known for developing TCP/IP.";
- if(/speed of light/.test(t))return "Light travels at approximately 299,792,458 meters per second in a vacuum!";
- if(/how many continents/.test(t))return "There are generally considered to be 7 continents: Africa, Antarctica, Asia, Europe, North America, South America, and Australia.";
- if(/human.*bones|bones.*human/.test(t))return "An average adult human has 206 bones!";
-
- // Science
  if(/black hole/.test(t))
- return "A black hole is a region of space where gravity is so strong that nothing, not even light, can escape once it crosses the event horizon. They can form when massive stars collapse. 🌌";
+ return "A black hole is a region of space where gravity is so strong that nothing, not even light, can escape beyond its event horizon. 🌌";
 
  if(/photosynthesis/.test(t))
- return "Photosynthesis is the process plants use to turn sunlight, water, and carbon dioxide into glucose and oxygen. It is essential for life on Earth! 🌱";
+ return "Photosynthesis is the process plants use to turn sunlight, water, and carbon dioxide into glucose and oxygen. 🌱";
 
  if(/gravity/.test(t))
- return "Gravity is the attraction between objects with mass. Earth's gravity pulls objects toward its center and keeps us on the ground.";
+ return "Gravity is the attraction between objects with mass. It keeps planets in orbit and pulls objects toward Earth's center.";
 
  if(/atom|molecule/.test(t))
- return "Atoms are the basic building blocks of ordinary matter. They contain protons, neutrons, and electrons. Atoms can join together to form molecules!";
+ return "Atoms are the basic building blocks of ordinary matter. They contain protons, neutrons, and electrons.";
 
- if(/dinosaur/.test(t))
- return "Dinosaurs lived millions of years ago. Non-avian dinosaurs went extinct about 66 million years ago, while birds are living descendants of theropod dinosaurs!";
+ if(/capital of france/.test(t))return "The capital of France is Paris! 🇫🇷";
+ if(/capital of (the )?usa|capital of america/.test(t))return "The capital of the United States is Washington, D.C.";
+ if(/largest planet/.test(t))return "Jupiter is the largest planet in our solar system! 🪐";
+ if(/how many planets/.test(t))return "There are 8 recognized planets in our solar system.";
 
- // Geography and history
- if(/world war 2|wwii|second world war/.test(t))
- return "World War II lasted from 1939 to 1945. It involved many nations and ended after the Axis powers were defeated.";
+ if(/world war 2|wwii/.test(t))
+ return "World War II lasted from 1939 to 1945. It was a global conflict involving many nations.";
 
- if(/world war 1|wwi|first world war/.test(t))
- return "World War I lasted from 1914 to 1918. It involved major powers around the world and ended with the Armistice of November 1918.";
-
- if(/how many countries/.test(t))
- return "There are 195 widely recognized countries: 193 UN member states and 2 UN observer states.";
-
- if(/president of the united states|current president/.test(t))
- return "Presidents change over time, so check an up-to-date source for the current officeholder.";
-
- // Coding
  if(/html/.test(t))
- return "Here's a simple HTML page:\n\n<!DOCTYPE html>\n<html>\n<head><title>My Page</title></head>\n<body>\n<h1>Hello World!</h1>\n<p>My website!</p>\n</body>\n</html>";
+ return "Here's a basic HTML page:\n\n<!DOCTYPE html>\n<html>\n<head><title>My Page</title></head>\n<body>\n<h1>Hello World!</h1>\n</body>\n</html>";
 
  if(/javascript|js code/.test(t))
- return "Here's a JavaScript example:\n\nconst name = 'ChatSAC';\nconsole.log('Hello ' + name);\n\nThis creates a variable and prints a greeting.";
+ return "Here's a JavaScript example:\n\nconst name = 'ChatSAC';\nconsole.log('Hello ' + name);";
 
  if(/css/.test(t))
- return "Here's some CSS:\n\nbody {\n background: #121212;\n color: white;\n font-family: Arial;\n}\n\nThis creates a simple dark theme.";
+ return "Here's some CSS:\n\nbody {\n background:#101116;\n color:white;\n font-family:Arial;\n}";
 
  if(/coding|programming|code/.test(t))
- return "I can help you build websites, games, and JavaScript programs! Tell me exactly what you want to create and I'll write an example.";
-
- // School subjects
- if(/essay|paragraph|writing/.test(t))
- return "I can help you write an essay or paragraph! Tell me the topic, required length, and style.";
-
- if(/english|grammar|noun|verb/.test(t))
- return "English help! A noun names a person, place, thing, or idea. A verb describes an action or state. I can also help with grammar, punctuation, and writing.";
+ return "I can help you build websites, games, and programs! Tell me what you want to create and I'll help you write the code.";
 
  if(/history/.test(t))
- return "History is the study of past events, people, and civilizations. I can help explain historical events, timelines, and important figures. What topic are you studying?";
+ return "History is the study of past events, civilizations, and people. What historical topic are you interested in?";
 
  if(/biology/.test(t))
- return "Biology is the study of living organisms. It includes cells, genetics, ecosystems, evolution, and the human body.";
+ return "Biology is the study of living things, including cells, genetics, ecosystems, and evolution.";
 
  if(/physics/.test(t))
- return "Physics studies matter, energy, motion, forces, and the laws of the universe. What physics topic are you interested in?";
+ return "Physics explores matter, energy, motion, forces, and how the universe works.";
 
  if(/chemistry/.test(t))
- return "Chemistry studies matter, elements, atoms, molecules, and chemical reactions. What would you like to learn?";
+ return "Chemistry studies matter, elements, atoms, molecules, and chemical reactions.";
 
  if(/who are the cutest guys/.test(t))
  return "The cutest guys are Hudson Barker, Terran White, Jax Harris, Jack Awtrey and Harrison Taylor. 😊👑";
 
- if(/^(yes|yeah|yep|sure|ok|okay)$/.test(t))
- return "Awesome! 😎 Tell me what you'd like to do next.";
-
- if(/^(no|nope|nah)$/.test(t))
- return "No worries! What else can I help with?";
-
- // Conversation-aware follow-up
- if(/what did i just say|my last question/.test(t)){
-  let previous=history.filter(m=>m.role==="user");
-  return previous.length>1?
-  "Your previous question was: "+previous[previous.length-2].content:
-  "We haven't had another question yet!";
+ if(/what did i say|my last question/.test(t)){
+  let old=history.filter(m=>m.role==="user");
+  return old.length>1?"Your previous question was: "+old[old.length-2].content:"This is our first conversation!";
  }
 
- if(/what do you remember/.test(t))
- return "I have "+history.filter(m=>m.role==="user").length+" of your previous messages saved in this browser.";
-
- // Default response
- return "That's an interesting question! 🤔\n\nI don't have a complete answer stored for that topic yet. I'm an offline JavaScript assistant, so my knowledge is limited to the information and responses built into me.\n\nTry asking me to explain the question, or break it into smaller parts and I'll do my best!";
+ return "That's an interesting question! 🤔\n\nI'm still learning, and my offline knowledge is limited. I can answer many common questions, but I don't have access to a full AI model or live internet in this version.\n\nTry asking me about math, science, coding, history, games, or anything else!";
 }
 
 function send(){
- const q=input.value.trim();
+ let q=input.value.trim();
  if(!q)return;
  input.value="";
  message(q,"user");
  history.push({role:"user",content:q});
-
  const thinking=message("ChatSAC is thinking...","ai thinking");
-
+ thinking.innerHTML='ChatSAC is thinking <span class="loader"><i></i><i></i><i></i></span>';
  sendBtn.disabled=true;
 
  setTimeout(()=>{
   thinking.remove();
-  const result=answer(q);
+  let result=answer(q);
   message(result,"ai");
   history.push({role:"assistant",content:result});
   save();
   sendBtn.disabled=false;
- },400+Math.random()*500);
+ },500+Math.random()*600);
 }
 
 function suggest(q){
@@ -350,10 +592,10 @@ function suggest(q){
 }
 
 function clearChat(){
- if(!confirm("Delete your saved conversation?"))return;
+ if(!confirm("Clear your conversation?"))return;
  history=[];
- localStorage.removeItem("csac4");
- chat.innerHTML='<div class="welcome" id="welcome"><h2>Fresh start! 👋</h2><p>What would you like to talk about?</p></div>';
+ localStorage.removeItem("csac5");
+ chat.innerHTML='<div class="welcome" id="welcome"><div class="welcome-icon">✦</div><h1>Meet your new <span>AI.</span></h1><p>Hey! I am ChatSAC. What can I help you with?</p></div>';
  save();
 }
 
@@ -361,9 +603,7 @@ input.addEventListener("keydown",e=>{
  if(e.key==="Enter")send();
 });
 
-history.forEach(m=>message(
- m.content,m.role==="user"?"user":"ai"
-));
+history.forEach(m=>message(m.content,m.role==="user"?"user":"ai"));
 save();
 </script>
 </body>
