@@ -1,97 +1,289 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canvas</title>
-    <link rel="stylesheet" href="admin.css"> 
-</head>
-<body>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Totally White Button</title>
-    <style>
-        /* Styles for the invisible button */
-        .totally-white-button {
-            /* Text and link styles */
-            display: inline-block; /* Allows setting width/height and padding */
-            text-decoration: none; /* Removes the underline from the link */
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            padding: 10px 20px;
-            cursor: pointer; /* Indicates it's clickable */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canvas | Admin Access</title>
 
-            /* The 'totally white' styling */
-            background-color: #FFFFFF; /* Pure White Background */
-            color: #FFFFFF;             /* Pure White Text/Link Color */
-            border: 2px solid #FFFFFF;  /* Pure White Border */
-        }
-    </style>
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    color: white;
+    background:
+        radial-gradient(ellipse at top, #25205a 0%, transparent 55%),
+        linear-gradient(135deg, #080b18, #11152b, #080b18);
+    overflow: hidden;
+}
+
+/* Background effects */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    filter: blur(110px);
+    opacity: .25;
+    pointer-events: none;
+}
+
+body::before {
+    background: #773cff;
+    top: -130px;
+    left: -100px;
+}
+
+body::after {
+    background: #007bff;
+    bottom: -150px;
+    right: -100px;
+}
+
+/* Main card */
+.container {
+    position: relative;
+    width: 90%;
+    max-width: 410px;
+    padding: 38px 30px;
+    text-align: center;
+    background: rgba(20, 24, 48, .82);
+    border: 1px solid rgba(151, 125, 255, .3);
+    border-radius: 24px;
+    box-shadow:
+        0 0 40px rgba(100, 65, 255, .15),
+        0 20px 60px rgba(0, 0, 0, .5);
+    backdrop-filter: blur(20px);
+    animation: appear .7s ease;
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+        transform: translateY(25px) scale(.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Top icon */
+.icon {
+    width: 75px;
+    height: 75px;
+    margin: 0 auto 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 22px;
+    font-size: 32px;
+    background: linear-gradient(135deg, #713cff, #168bff);
+    box-shadow: 0 0 30px rgba(112, 70, 255, .4);
+}
+
+h2 {
+    margin: 0 0 12px;
+    font-size: 27px;
+    letter-spacing: -.5px;
+}
+
+.subtitle {
+    color: #a6acc8;
+    font-size: 14px;
+    margin-bottom: 27px;
+    line-height: 1.6;
+}
+
+/* Input */
+input {
+    width: 100%;
+    padding: 17px;
+    margin-bottom: 18px;
+    border-radius: 12px;
+    border: 1px solid #343b60;
+    background: rgba(8, 12, 30, .9);
+    color: white;
+    font-size: 22px;
+    text-align: center;
+    letter-spacing: 9px;
+    outline: none;
+    transition: .3s;
+}
+
+input::placeholder {
+    color: #656d8d;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+input:focus {
+    border-color: #906bff;
+    box-shadow: 0 0 18px rgba(125, 85, 255, .25);
+}
+
+/* Buttons */
+button {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    background: linear-gradient(100deg, #713cff, #267cff);
+    box-shadow: 0 5px 22px rgba(91, 74, 255, .3);
+    transition: .25s;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(91, 74, 255, .5);
+    filter: brightness(1.15);
+}
+
+button:active {
+    transform: scale(.97);
+}
+
+/* Message */
+.message {
+    min-height: 24px;
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.correct {
+    color: #45f5a1;
+}
+
+.incorrect {
+    color: #ff647c;
+}
+
+/* Home button */
+#menuBtn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 11px 25px;
+    text-decoration: none;
+    color: #b8a7ff;
+    border: 1px solid rgba(143, 111, 255, .4);
+    border-radius: 10px;
+    font-size: 14px;
+    transition: .25s;
+}
+
+#menuBtn:hover {
+    background: rgba(119, 73, 255, .15);
+    color: white;
+    border-color: #9874ff;
+}
+
+/* Hidden surprise button */
+.totally-white-button {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 30px;
+    height: 30px;
+    opacity: 0;
+    z-index: 10;
+    cursor: pointer;
+}
+
+/* Footer */
+.footer {
+    margin-top: 27px;
+    color: #656d8d;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+</style>
 </head>
+
 <body>
 
-    <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="totally-white-button">
-        Click Me
-    </a>
-    <div class="container">
-        <h2>Guess the 4-Digit Password</h2>
-        <p>Enter a 4-digit number:</p>
-        <input type="text" id="passwordInput" maxlength="4" placeholder="Enter password" />
-        <button onclick="checkPassword()">Submit</button>
-        <div id="message" class="message"></div>
-        <a href="index.html" class="btn" id="menuBtn">Home</a> 
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+   class="totally-white-button">Click Me</a>
+
+<div class="container">
+
+    <div class="icon">🔐</div>
+
+    <h2>Admin Access</h2>
+
+    <p class="subtitle">
+        Enter your 4-digit security code<br>
+        to continue to the admin dashboard.
+    </p>
+
+    <input
+        type="password"
+        id="passwordInput"
+        maxlength="4"
+        inputmode="numeric"
+        placeholder="••••"
+        autocomplete="off"
+    >
+
+    <button onclick="checkPassword()">Unlock Dashboard →</button>
+
+    <div id="message" class="message"></div>
+
+    <a href="index.html" id="menuBtn">← Back Home</a>
+
+    <div class="footer">
+        CANVAS • SECURE ADMIN PORTAL
     </div>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Totally White Button</title>
-    <style>
-        /* Styles for the invisible button */
-        .totally-white-button {
-            /* Text and link styles */
-            display: inline-block; /* Allows setting width/height and padding */
-            text-decoration: none; /* Removes the underline from the link */
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            padding: 10px 20px;
-            cursor: pointer; /* Indicates it's clickable */
+</div>
 
-            /* The 'totally white' styling */
-            background-color: #FFFFFF; /* Pure White Background */
-            color: #FFFFFF;             /* Pure White Text/Link Color */
-            border: 2px solid #FFFFFF;  /* Pure White Border */
-        }
-    </style>
-</head>
-<body>
+<script>
+const correctPassword = "6741";
 
-    <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="totally-white-button">
-        Click Me
-    </a>
+function checkPassword() {
+    const userInput = document.getElementById("passwordInput").value;
+    const messageDiv = document.getElementById("message");
 
+    if (userInput === correctPassword) {
+        messageDiv.textContent = "✓ Access granted! Redirecting...";
+        messageDiv.className = "message correct";
 
-    <script>
-        // Correct password
-        const correctPassword = "6741";
+        setTimeout(() => {
+            window.open(
+                "https://savnaclive.github.io/savnac/realadmin.html",
+                "_blank"
+            );
+        }, 500);
 
-        function checkPassword() {
-            const userInput = document.getElementById("passwordInput").value;
-            const messageDiv = document.getElementById("message");
+    } else {
+        messageDiv.textContent = "✕ Incorrect code. Try again.";
+        messageDiv.className = "message incorrect";
 
-            if (userInput === correctPassword) {
-                messageDiv.textContent = "Correct! You guessed the password.";
-                messageDiv.className = "message correct";
-                
-                // Open the URL in a new tab if the guess is correct
-                window.open("https://savnaclive.github.io/savnac/realadmin.html", "_blank");
-            } else {
-                messageDiv.textContent = "Incorrect! Try again.";
-                messageDiv.className = "message incorrect";
-            }
-        }
-    </script>
+        document.getElementById("passwordInput").value = "";
+    }
+}
+
+// Allow Enter key
+document.getElementById("passwordInput").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        checkPassword();
+    }
+});
+</script>
+
 </body>
 </html>
